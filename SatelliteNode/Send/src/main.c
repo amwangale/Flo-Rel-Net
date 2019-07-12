@@ -8,17 +8,27 @@ t_node configure(t_node node) {
 	return (node);
 }
 
+bool listen_for_data() {
+	// while true
+}
+
+bool collect_data() {
+
+}
+
 initialize_recieve_buffers(t_node *node) {
 	// new hash
 		// for each index
 			// new ring buffer;
-				// listen_for_data(index);
+				// new thread
+					// listen_for_data(index);
 }
 
 initialize_devices(t_node *node) {
 	// for each device
 		// new hash
-			// collect_data(device);
+			// new thread
+				// collect_data(device);
 }
 
 fetch_top_result(t_node *node) {
@@ -42,9 +52,7 @@ t_node go_online(t_node node) {
 			while (node.running) {
 				result = fetch_top_result(node.results);
 
-				if (result)
-					if ((packet = strip_result(result)));
-						transmit_result(packet);
+				if (result) transmit_result(result.buffer);
 				
 				sleep(1);
 			}

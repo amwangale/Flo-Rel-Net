@@ -7,12 +7,16 @@
 #endif
 
 #ifndef PACKET_SIZE
-	#define PACKET_SIZE
+	#define PACKET_SIZE 60
 #endif
 
-typedef struct s_packet {
-
-} t_packet;
+typedef struct s_flags {
+	float transmission: 1;
+	float panic: 1;
+	float failure: 1;
+	float disconnect: 1;
+	float programmable: 1;
+} t_flags;
 
 typedef struct s_queue {
 
@@ -26,14 +30,16 @@ typedef struct s_sender {
 
 } t_sender;
 
+typedef struct s_item {
 
+} t_item;
 
 typedef struct s_result {
 	float buffer[PACKET_SIZE];
 } t_result;
 
 typedef struct s_node {
-	short id: 10;
+	short id: NODE_ID_SIZE;
 	enum {
 		bool running;
 		bool success,
