@@ -1,7 +1,7 @@
 #include "../includes/send.h"
 
 bool register(t_node node) {
-	// TODO
+	// TODO broadcast to other nodes
 	return (true);
 }
 
@@ -35,14 +35,60 @@ bool device_connecting(t_node *node) {
 	return (node->hash);
 }
 
-bool collect_data() {
+bool set_header(t_result *result) {
+	result.flags->transmission = 1;
+	return (true);
+}
+
+bool set_message(t_message message, void *data) {
+
+	return (true);
+}
+
+bool get_status(t_node *node) {
+	bool result;
+
+	result = false;
+	if (pthread_mutex_trylock(node->locks->status_lock)) {
+		result = node->status.running;
+		pthread_mutex_unlock(node->locks->status_lock);
+	}
+
+	return (result);
+}
+
+bool collect_data(t_thread_watcher *watcher) {
+	int size;
+	int retry;
+
+	float21 f;
 	t_result result;
 
-	set_header(&result);
-	while (true) {
-		if ((data = recv())) {
-			set_message(result->message, &data);
+	while (watcher->status.running) {
+		size = 0;
+		retry = 5;
+		while (size < MESSAGE_SIZE && retry) {
+			// receive bound to device
+			if ((data = recv())) {
+				f = float_to_float21((float)data);
+				result->message.buffer[size / BIT_WIDTH] = f;
+				size += BIT_WIDTH;
+			} else {
+				retry--;
+			}
 		}
+
+		if (size >= MESSAGE_SIZE) {
+			retry = 5;
+			while (!push_back(watcher->node->results, data) && retry--) {
+				sleep(1);
+			}
+		} else {
+			watcher->status.running = false;
+		}
+
+		if (get_status(node->status)->status.running == false)
+			watcher->status.running = false;
 	}
 
 	pthread_exit(&watcher.status);
