@@ -44,20 +44,17 @@ typedef struct s_header {
 	float id: 10;
 } t_header;
 
-typedef struct s_queue {
-	struct s_queue *next;
-	struct s_queue *prev;
-	void *data;
-} t_queue;
-
-typedef struct s_hash {
-	int key;
-	void *value;
-} t_hash;
-
 typedef struct s_item {
-
+	struct s_item *next;
+	struct s_item *prev;
+	t_result data;
 } t_item;
+
+typedef struct s_queue {
+	t_item *front;
+	t_item *back;
+	t_item item;
+} t_queue;
 
 typedef struct s_message {
 	float21 buffer[MESSAGE_SIZE / BIT_WIDTH];
@@ -68,61 +65,11 @@ typedef struct s_result {
 	t_message message;
 } t_result;
 
-typedef struct s_status {
-	enum {
-		bool running;
-		bool success,
-		bool failure
-	} status;
-} t_status;
-
 typedef struct s_thread_watcher {
 	pthread_t thread;
 	t_status status;
 	t_queue results;
+	t_queue global_results;
 } t_thread_watcher;
-
-typedef struct s_node {
-	short id: NODE_ID_SIZE;
-	t_status status;
-	t_hash results_hash;
-	t_hash receive_hash;
-	t_sender sender;
-} t_node;
-
-typedef struct s_float21 {
-	float sign: 1;
-	float value: 20;
-} float21;
-
-t_node new_node(char **argv) {
-	//
-}
-
-float21 float_to_float21(float num) {
-	if (num > pow(2, 10)) return (null);
-
-	int i;
-	float21 f;
-	double value;
-	double fraction;
-	double integral;
-
-	value = 0;
-	f = new_float21();
-	fraction = modf(num, &integral);
-	f.sign = (num >> 32) & 0x1;
-	f.value |= integral;
-	f.value <<= 10; // half-size
-
-	i = -1;
-	while (num > 0x3FF) {
-		num /= 10;
-	}
-
-	f.value |= num;
-
-	return (f);
-}
 
 #endif

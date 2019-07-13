@@ -1,54 +1,30 @@
 #include "../includes/send.h"
 
+bool register(t_node node) {
+	// TODO
+	return (true);
+}
+
 t_node configure(t_node node) {
 	node.sender.running = true;
 
-	register(node);
-	
-	return (node);
-}
-
-t_header *strip_header(void *data) {
-	t_header header;
-
-	header = new_header();
-	memcpy(&header, data, sizeof(header));
-	return (header);
-}
-
-t_status recieve(t_node *node) {
-	int index;
-	t_queue queue;
-	t_header *header;
-
-	while (node->status.running) {
-		if ((data = recv())) {
-			if ((header = strip_header(&data))) {
-				if ((index = get(node->receive_hash, header->id))) {
-					if ((queue = get(node->receive_hash, index))) {
-						if ((message = strip_message(&data))) {
-							push_back(queue, message);
-						}
-					}
-				}
-			}
-			node->results_hash
-		}
-		sleep(1);
-	}
-
-	return (node->status.running);
+	if (register(node)) return (node);
+	else return (null);
 }
 
 bool listen_for_data(t_thread_watcher *watcher) {
 	t_item item;
 
 	while (watcher->status.running) {
+		retry = 5;
 		data = pop_front(watcher->results);
 		if (data) {
-			
+			while (!push_back(watcher->node->results, data) && retry--) {
+				sleep(1);
+			}
 		}
-		sleep(1);
+		if (get_status(node->status)->status.running == false)
+			watcher->status.running = false;
 	}
 
 	pthread_exit(&watcher.status);
@@ -56,7 +32,7 @@ bool listen_for_data(t_thread_watcher *watcher) {
 }
 
 bool device_connecting(t_node *node) {
-	return (node->hash)
+	return (node->hash);
 }
 
 bool collect_data() {
@@ -65,48 +41,16 @@ bool collect_data() {
 	set_header(&result);
 	while (true) {
 		if ((data = recv())) {
-			result->message
+			set_message(result->message, &data);
 		}
 	}
 
 	pthread_exit(&watcher.status);
 }
 
-initialize_recieve_buffers(t_node *node) {
-	int error;
-	t_queue queue;
-	t_thread_watcher watcher;
-	
-	watcher = new_thread_watcher();
-	node->results_hash = new_hash(node->neighbor_count);
 
-	for (int i = 0; i < node->neighbor_count; i++) {
-		if (!hash->get(i)) {
-			if ((queue = new_queue())) {
-				if (!results_hash->set(i, queue)) {
-					printf("Failed to create results queue");
-				} else {
-					error = pthread_create(&watcher->thread, NULL, listen_for_data, &watcher);
-					if (error)  {
-						printf("Pthread failed to create\n");
-					} else {
-						pthread_join(watcher->thread, &error);
-					}
-				}
-			}
-		}
-	}
-	// listen_for_data(index);
-}
 
-initialize_devices(t_node *node) {
-	// for each device
-		// new hash
-			// new thread
-				// collect_data(device);
-}
-
-fetch_top_result(t_node *node) {
+t_result fetch_top_result(t_node *node) {
 	t_item item;
 	t_result result;
 
@@ -118,6 +62,13 @@ fetch_top_result(t_node *node) {
 	return (result);
 }
 
+bool transmit_result(t_result result) {
+	if (result)
+		if (send(result))
+			return (true);
+	return (false);
+}
+
 t_node go_online(t_node node) {
 	t_result result;
 	t_packet packet;
@@ -125,17 +76,16 @@ t_node go_online(t_node node) {
 	if initialize_devices(&node.results).status.success {
 		if initialize_recieve_buffers(&node.results).status.success {
 			while (node.running) {
-				result = fetch_top_result(node.results);
-
-				if (result) transmit_result(result.buffer);
-				
+				if ((result = fetch_top_result(node.results)));
+					if (transmit_result(result) == false)
+						printf("Failed ot send result\n");
 				sleep(1);
 			}
 		} else {
-
+			node->status.failure = true;
 		}
 	} else {
-
+		node->status.failure = true;
 	}
 
 	return (node);
