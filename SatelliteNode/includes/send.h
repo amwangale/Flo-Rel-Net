@@ -31,6 +31,10 @@
 	#define PACKET_SIZE HEADER_SIZE + MESSAGE_SIZE
 #endif
 
+#ifndef BITDEX // BIT INDEX
+	#define BITDEX(i) i / BIT_WIDTH
+#endif
+
 typedef struct s_item {
 	struct s_item *next;
 	struct s_item *prev;

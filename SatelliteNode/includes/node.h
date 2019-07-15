@@ -13,6 +13,18 @@ typedef struct s_node {
 	t_locks locks;
 } t_node;
 
+bool get_status(t_node *node) {
+	bool result;
+
+	result = false;
+	if (pthread_mutex_trylock(node->locks->status_lock)) {
+		result = node->status.running;
+		pthread_mutex_unlock(node->locks->status_lock);
+	}
+
+	return (result);
+}
+
 t_node new_node(char **argv) {
-	//
+	// TODO needs devices
 }

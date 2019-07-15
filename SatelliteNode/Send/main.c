@@ -41,20 +41,7 @@ bool set_header(t_result *result) {
 }
 
 bool set_message(t_message message, void *data) {
-
 	return (true);
-}
-
-bool get_status(t_node *node) {
-	bool result;
-
-	result = false;
-	if (pthread_mutex_trylock(node->locks->status_lock)) {
-		result = node->status.running;
-		pthread_mutex_unlock(node->locks->status_lock);
-	}
-
-	return (result);
 }
 
 bool collect_data(t_thread_watcher *watcher) {
@@ -71,7 +58,7 @@ bool collect_data(t_thread_watcher *watcher) {
 			// receive bound to device
 			if ((data = recv())) {
 				f = float_to_float21((float)data);
-				result->message.buffer[size / BIT_WIDTH] = f;
+				result->message.buffer[BITDEX(size)] = f;
 				size += BIT_WIDTH;
 			} else {
 				retry--;
@@ -94,8 +81,6 @@ bool collect_data(t_thread_watcher *watcher) {
 	pthread_exit(&watcher.status);
 }
 
-
-
 t_result fetch_top_result(t_node *node) {
 	t_item item;
 	t_result result;
@@ -108,10 +93,22 @@ t_result fetch_top_result(t_node *node) {
 	return (result);
 }
 
+bool simulate_transmission(t_result result) {
+	printf("HEADER || %f\n [", (float)result->header);
+	for (int i = 0; i < MESSAGE_SIZE; i += BIT_WIDTH) {
+		printf("%f ", (float)result->message[BITDEX(i)]);
+	}
+	printf("]\n")
+}
+
 bool transmit_result(t_result result) {
-	if (result)
-		if (send(result))
-			return (true);
+	if (result) {
+		result->header->transmission = 1;
+		/*
+		TODO
+		*/
+		simulate_transmission(result);
+	}
 	return (false);
 }
 
