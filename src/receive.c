@@ -10,7 +10,7 @@ t_message *strip_message(void *data) {
 
 	while (i < MESSAGE_SIZE) {
 		memcpy(
-			message->buffer[i / BIT_WIDTH],
+			message->buffer[BITDEX(i)],
 			&data[i], sizeof(float21)
 		);
 		i += BIT_WIDTH;
@@ -34,7 +34,7 @@ t_status receive(t_node *node) {
 
 	while (node->status.running) {
 		/*
-		if ((data = recv())) {
+		LoRa_receive(&node->modem);
 		*/
 		if ((data = simulate_receive(node))) {
 			if ((header = strip_header(&data))) {
@@ -47,7 +47,6 @@ t_status receive(t_node *node) {
 				}
 			}
 		}
-		sleep(1);
 	}
 
 	return (node->status.running);

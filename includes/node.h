@@ -20,6 +20,8 @@ typedef struct s_node {
 	t_hash receive_hash;
 	t_sender sender;
 
+	LoRa_ctl modem;
+
 	t_locks locks;
 } t_node;
 

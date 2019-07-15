@@ -30,3 +30,14 @@ t_result *simulate_receive(t_node node) {
 	result = simulate_random_result(node);
 	return (result);
 }
+
+bool simulate_transmission(t_result result) {
+	/*
+	
+	*/
+	printf("HEADER || %f\n [", (float)result->header);
+	for (int i = 0; i < MESSAGE_SIZE; i += BIT_WIDTH) {
+		printf("%f ", (float)result->message[BITDEX(i)]);
+	}
+	printf("]\n")
+}

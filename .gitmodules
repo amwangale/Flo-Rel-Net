@@ -1,0 +1,3 @@
+[submodule "sx1278-LoRa-RaspberryPi"]
+	path = sx1278-LoRa-RaspberryPi
+	url = https://github.com/YandievRuslan/sx1278-LoRa-RaspberryPi.git
