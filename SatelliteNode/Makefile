@@ -1,6 +1,6 @@
-NAME = 42sh
+NAME = FloRel
 
-TESTING = shell42.test
+# TESTING = shell42.test
 
 CC = gcc
 
@@ -9,24 +9,28 @@ SRC_DIR = src
 CFLAGS  = -Wall -Werror -Wextra -g
 #-fsanitize=address
 
-INCL = -I incl
+INCL = -I includes
 
-MINILIB = ./mini_lib/
-
-SRC_DIR = srcs
-SRC_FILES = 
+SRC_DIR = src
+SRC_FILES = main.c \
+			hash.c \
+			init.c \
+			queue.c \
+			receive.c \
+			result.c \
+			send.c \
+			simulate.c \
+			utils.c
 
 SRC = $(addprefix $(SRC_DIR)/, $(SRC_FILES))
 
 RM = rm -fr
 
 $(NAME):
-		$(MAKE) -C $(MINILIB) re
-		$(CC) $(CFLAGS) $(INCL) $(SRC) $(MINILIB)/mini_lib.a -o $(NAME)
+		$(CC) $(CFLAGS) $(INCL) $(SRC) -o $(NAME)
 
 $(TESTING):
-		$(MAKE) -C $(MINILIB) re
-		$(CC) $(CFLAGS) $(INCL) $(SRC) $(MINILIB)/mini_lib.a -D TESTING -o $(NAME)
+		$(CC) $(CFLAGS) $(INCL) $(SRC) -D TESTING -o $(NAME)
 
 all: $(NAME)
 

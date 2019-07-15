@@ -1,3 +1,5 @@
+#ifndef HASH_H
+#define HASH_H
 
 typedef struct s_value {
 	int key;
@@ -17,9 +19,9 @@ t_hash *new_hash(int count) {
 }
 
 void *get(t_hash table, int key) {
-	if (index < table.size) {
+	if (index < table.size)
 		return (table[key]);
-	} else {
-		return (NULL);
-	}
+	return (NULL);
 }
+
+#endif

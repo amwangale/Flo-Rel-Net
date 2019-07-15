@@ -1,23 +1,32 @@
-
+#ifndef UTILS_H
+#define UTILS_H
 
 typedef struct s_status {
 	enum {
-		bool running;
-		bool success,
-		bool failure
+		running,
+		success,
+		failure
 	} status;
 } t_status;
 
 typedef struct s_float21 {
-	float sign: 1;
-	float value: 20;
+	unsigned int sign: 1;
+	unsigned int value: 20;
 } float21;
 
-float21 float_to_float21(float num) {
-	if (num > pow(2, 10)) return (null);
+float21 *new_float21(void) {
+	float21 *f;
+
+	if (!(f = (float21*)calloc(1, sizeof(float21))))
+		return (NULL);
+	return (f);
+}
+
+float21 *float_to_float21(float num) {
+	if (num > pow(2, 10)) return (NULL);
 
 	int i;
-	float21 f;
+	float21 *f;
 	double value;
 	double fraction;
 	double integral;
@@ -38,3 +47,5 @@ float21 float_to_float21(float num) {
 
 	return (f);
 }
+
+#endif

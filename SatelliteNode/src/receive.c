@@ -14,6 +14,8 @@ t_message *strip_message(void *data) {
 		);
 		i += BIT_WIDTH;
 	}
+
+	return (message);
 }
 
 t_header *strip_header(void *data) {
@@ -24,13 +26,16 @@ t_header *strip_header(void *data) {
 	return (header);
 }
 
-t_status recieve(t_node *node) {
+t_status receive(t_node *node) {
 	int index;
 	t_queue queue;
 	t_header *header;
 
 	while (node->status.running) {
+		/*
 		if ((data = recv())) {
+		*/
+		if ((data = simulate_receive(node))) {
 			if ((header = strip_header(&data))) {
 				if ((index = get(node->receive_hash, header->id))) {
 					if ((queue = get(node->receive_hash, index))) {
@@ -40,7 +45,6 @@ t_status recieve(t_node *node) {
 					}
 				}
 			}
-			node->results_hash
 		}
 		sleep(1);
 	}

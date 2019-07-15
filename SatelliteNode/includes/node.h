@@ -1,3 +1,9 @@
+#ifndef NODE_H
+#define NODE_H
+
+#include "send.h"
+#include "hash.h"
+
 typedef struct s_locks {
 	pthread_mutex_t status_lock;
 } t_locks;
@@ -27,4 +33,11 @@ bool get_status(t_node *node) {
 
 t_node new_node(char **argv) {
 	// TODO needs devices
+	t_node *node;
+
+	if (!(node = (t_node*)calloc(1, sizeof(t_node))))
+		return (NULL);
+	return (node);
 }
+
+#endif

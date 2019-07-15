@@ -6,6 +6,12 @@
 #include <unistd.h> 
 #include <pthread.h>
 #include <stdbool.h>
+#include <time.h>
+#include <math.h>
+
+#include "result.h"
+#include "utils.h"
+#include "queue.h"
 
 #ifndef NODE_ID_SIZE
 	#define NODE_ID_SIZE 10
@@ -34,27 +40,6 @@
 #ifndef BITDEX // BIT INDEX
 	#define BITDEX(i) i / BIT_WIDTH
 #endif
-
-typedef struct s_item {
-	struct s_item *next;
-	struct s_item *prev;
-	t_result data;
-} t_item;
-
-typedef struct s_queue {
-	t_item *front;
-	t_item *back;
-	t_item item;
-} t_queue;
-
-typedef struct s_message {
-	float21 buffer[MESSAGE_SIZE / BIT_WIDTH];
-} t_message;
-
-typedef struct s_result {
-	t_header header;
-	t_message message;
-} t_result;
 
 typedef struct s_thread_watcher {
 	pthread_t thread;
