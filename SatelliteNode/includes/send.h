@@ -13,14 +13,6 @@
 #include "utils.h"
 #include "queue.h"
 
-#ifndef NODE_ID_SIZE
-	#define NODE_ID_SIZE 10
-#endif
-
-#ifndef BIT_WIDTH
-	#define BIT_WIDTH 21
-#endif
-
 #ifndef MHZ
 	#define MHZ 900
 #endif

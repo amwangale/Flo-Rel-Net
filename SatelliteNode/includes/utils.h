@@ -1,6 +1,10 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#ifndef BIT_WIDTH
+	#define BIT_WIDTH 21
+#endif
+
 typedef struct s_status {
 	enum {
 		running,
@@ -25,7 +29,6 @@ float21 *new_float21(void) {
 float21 *float_to_float21(float num) {
 	if (num > pow(2, 10)) return (NULL);
 
-	int i;
 	float21 *f;
 	double value;
 	double fraction;
@@ -34,16 +37,15 @@ float21 *float_to_float21(float num) {
 	value = 0;
 	f = new_float21();
 	fraction = modf(num, &integral);
-	f.sign = (num >> 32) & 0x1;
-	f.value |= integral;
-	f.value <<= 10; // half-size
+	f->sign = (num >> 32) & 0x1;
+	f->value |= integral;
+	f->value <<= 10; // half-size
 
-	i = -1;
 	while (num > 0x3FF) {
 		num /= 10;
 	}
 
-	f.value |= num;
+	f->value |= num;
 
 	return (f);
 }

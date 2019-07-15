@@ -2,6 +2,7 @@
 #define RESULT_H
 
 #include "send.h"
+#include "utils.h"
 
 typedef struct s_flags {
 	unsigned int transmission: 1;
@@ -13,7 +14,7 @@ typedef struct s_flags {
 
 typedef struct s_header {
 	t_flags flags;
-	unsigned int id: 10;
+	unsigned int id: NODE_ID_WIDTH;
 } t_header;
 
 typedef struct s_message {
@@ -33,30 +34,31 @@ t_flags *new_flags(void) {
 	return (flags);
 }
 
-t_header *new_header(void) {
+t_header *new_header(short id) {
 	t_header *header;
 
 	if (!(header = (t_header*)calloc(1, sizeof(t_header))))
 		return (NULL);
 	if (!(header->flags = new_flags()))
 		return (NULL);
+	header->id = id;
 	return (header)
 }
 
-t_message new_message(void) {
-	t_message message;
+t_message *new_message(void) {
+	t_message *message;
 
 	if (!(message = (t_message*)calloc(1, sizeof(t_message))))
 		return (NULL);
 	return (message);
 }
 
-t_result new_result(void) {
-	t_result result;
+t_result *new_result(short id) {
+	t_result *result;
 
 	if (!(result = (t_result*)calloc(1, sizeof(t_result))))
 		return (NULL);
-	if (!(result->header = new_header()))
+	if (!(result->header = new_header(id)))
 		return (NULL);
 	if (!(result->message = new_message()))
 		return (NULL);

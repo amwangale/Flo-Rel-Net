@@ -1,4 +1,5 @@
 #include "../includes/send.h"
+#include "../includes/node.h"
 
 t_message *strip_message(void *data) {
 	float15 f;

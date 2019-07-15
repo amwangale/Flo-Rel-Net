@@ -11,7 +11,7 @@ typedef struct s_hash {
 } t_hash;
 
 t_hash *new_hash(int count) {
-	t_hash table;
+	t_hash *table;
 
 	if (!(table = (t_hash*)memalloc(count, sizeof(t_value))))
 		return (NULL);

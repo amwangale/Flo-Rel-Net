@@ -4,12 +4,16 @@
 #include "send.h"
 #include "hash.h"
 
+#ifndef NODE_ID_WIDTH
+	#define NODE_ID_WIDTH 10
+#endif
+
 typedef struct s_locks {
 	pthread_mutex_t status_lock;
 } t_locks;
 
 typedef struct s_node {
-	short id: NODE_ID_SIZE;
+	unsigned int id: NODE_ID_WIDTH;
 	t_status status;
 	t_hash device_hash;
 	t_hash results_hash;
