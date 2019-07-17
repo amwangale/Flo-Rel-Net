@@ -1,4 +1,4 @@
-#include "../includes/utils.h"
+#include "../includes/florel.h"
 
 float21 *float_to_float21(float num) {
 	if (num > pow(2, 10)) return (NULL);
@@ -9,7 +9,7 @@ float21 *float_to_float21(float num) {
 
 	f = new_float21();
 	fraction = modf(num, &integral);
-	f->sign = (num >> 32) & 0x1;
+	f->sign = ((unsigned int)num >> 31) & 0x1;
 	f->value |= (int)integral;
 	f->value <<= 10; // half-size
 

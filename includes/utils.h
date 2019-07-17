@@ -1,14 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <math.h>
-#include <stdio.h> 
-#include <stdlib.h> 
-#include <unistd.h> 
-#include <pthread.h>
-#include <stdbool.h>
-#include <time.h>
-#include <string.h>
+#include "florel.h"
 
 #ifndef BIT_WIDTH
 	#define BIT_WIDTH 21
@@ -31,6 +24,14 @@ float21 *new_float21(void) {
 	if (!(f = (float21*)calloc(1, sizeof(float21))))
 		return (NULL);
 	return (f);
+}
+
+t_status *new_status(void) {
+	t_status *status;
+	
+	if (!(status = (t_status*)calloc(1, sizeof(t_status))))
+		return (NULL);
+	return (status);
 }
 
 float21 *float_to_float21(float num);

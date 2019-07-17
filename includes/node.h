@@ -2,8 +2,7 @@
 #define NODE_H
 
 #include "utils.h"
-#include "send.h"
-#include "hash.h"
+#include "queue.h"
 
 #ifndef NODE_ID_WIDTH
 	#define NODE_ID_WIDTH 10
@@ -15,33 +14,36 @@ typedef struct s_locks {
 
 typedef struct s_node {
 	unsigned int id: NODE_ID_WIDTH;
+	unsigned int neighbor_count;
+	unsigned int device_count;
+
 	t_status status;
 	t_hash device_hash;
 	t_hash results_hash;
 	t_hash receive_hash;
+	t_queue global_results;
 
 	LoRa_ctl modem;
-
 	t_locks locks;
 } t_node;
 
-bool get_status(t_node *node) {
-	bool result;
+t_status *get_status(t_node *node) {
+	t_status *result;
 
-	result = false;
+	result = NULL;
 	if (pthread_mutex_trylock(&node->locks.status_lock)) {
-		result = node->status.running;
+		result = &node->status;
 		pthread_mutex_unlock(&node->locks.status_lock);
 	}
 
 	return (result);
 }
 
-t_node new_node(char **argv) {
+t_node *new_node(char **argv) {
 	// TODO needs devices
-	t_node node;
+	t_node *node;
 
-	if (!(node = calloc(1, sizeof(t_node))))
+	if (!(node = (t_node*)calloc(1, sizeof(t_node))))
 		return (NULL);
 	return (node);
 }

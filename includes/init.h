@@ -2,5 +2,6 @@
 #define INIT_H
 
 #include "utils.h"
+#include "node.h"
 
 #endif

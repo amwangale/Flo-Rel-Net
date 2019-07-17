@@ -1,9 +1,8 @@
 #ifndef SEND_H
 #define SEND_H
 
-#include "result.h"
-#include "utils.h"
 #include "queue.h"
+#include "threads.h"
 
 #ifndef MHZ
 	#define MHZ 900
@@ -24,12 +23,5 @@
 #ifndef BITDEX // BIT INDEX
 	#define BITDEX(i) i / BIT_WIDTH
 #endif
-
-typedef struct s_thread_watcher {
-	pthread_t thread;
-	t_status status;
-	t_queue results;
-	t_queue global_results;
-} t_thread_watcher;
 
 #endif
