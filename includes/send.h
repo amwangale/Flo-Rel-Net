@@ -1,14 +1,6 @@
 #ifndef SEND_H
 #define SEND_H
 
-#include <stdio.h> 
-#include <stdlib.h> 
-#include <unistd.h> 
-#include <pthread.h>
-#include <stdbool.h>
-#include <time.h>
-#include <math.h>
-
 #include "result.h"
 #include "utils.h"
 #include "queue.h"

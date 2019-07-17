@@ -1,6 +1,7 @@
 #ifndef NODE_H
 #define NODE_H
 
+#include "utils.h"
 #include "send.h"
 #include "hash.h"
 
@@ -18,7 +19,6 @@ typedef struct s_node {
 	t_hash device_hash;
 	t_hash results_hash;
 	t_hash receive_hash;
-	t_sender sender;
 
 	LoRa_ctl modem;
 
@@ -29,9 +29,9 @@ bool get_status(t_node *node) {
 	bool result;
 
 	result = false;
-	if (pthread_mutex_trylock(node->locks->status_lock)) {
+	if (pthread_mutex_trylock(&node->locks.status_lock)) {
 		result = node->status.running;
-		pthread_mutex_unlock(node->locks->status_lock);
+		pthread_mutex_unlock(&node->locks.status_lock);
 	}
 
 	return (result);
@@ -39,9 +39,9 @@ bool get_status(t_node *node) {
 
 t_node new_node(char **argv) {
 	// TODO needs devices
-	t_node *node;
+	t_node node;
 
-	if (!(node = (t_node*)calloc(1, sizeof(t_node))))
+	if (!(node = calloc(1, sizeof(t_node))))
 		return (NULL);
 	return (node);
 }

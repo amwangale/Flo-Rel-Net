@@ -1,3 +1,4 @@
+#include "../includes/send.h"
 
 bool transmit_result(t_node *node, t_result result) {
 	if (result) {

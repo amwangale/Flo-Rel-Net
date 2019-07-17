@@ -1,7 +1,7 @@
 #include "../includes/queue.h"
 
 bool push_back(t_queue *queue, void *data) {
-	t_queue item;
+	t_item item;
 
 	if ((item = new_item())) {
 		// TODO checks

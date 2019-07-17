@@ -81,47 +81,20 @@ bool collect_data(t_thread_watcher *watcher) {
 	pthread_exit(&watcher.status);
 }
 
-t_result fetch_top_result(t_node *node) {
+t_result fetch_top_result(t_node node) {
 	t_item item;
 	t_result result;
 
-	item = node.results.pop_front();
+	item = pop_front(&node.results);
 	if (item) {
-		result = memccpy(&result, item.data, sizeof(float * PACKET_SIZE));
+		result = memcpy(&result, item.data, sizeof(float * PACKET_SIZE));
 	}
 
 	return (result);
 }
 
-bool initialize_lora(t_node node) {
-	LoRa_ctl modem;
-	float21 buffer[PACKET_SIZE / BIT_WIDTH];
-
-    // See for typedefs, enumerations and there values in LoRa.h header file
-    modem.spiCS = 0; //Raspberry SPI CE pin number
-    
-    modem.rx.callback = rx_f;
-    modem.rx.data.buf = buffer;
-
-    modem.eth.preambleLen = 6;
-    modem.eth.bw = BW62_5; //Bandwidth 62.5KHz
-    modem.eth.sf = SF12; //Spreading Factor 12
-    modem.eth.ecr = CR8; //Error coding rate CR4/8
-    modem.eth.freq = PACKET_SIZE * 1000000; // 900.0MHz
-    modem.eth.resetGpioN = 4;// GPIO4 on lora RESET pi
-    modem.eth.dio0GpioN = 17;// GPIO17 on lora DIO0 pin to control Rxdone and Txdone interrupts
-    modem.eth.outPower = OP20;// Output power
-    modem.eth.powerOutPin = PA_BOOST;// Power Amplifire pin
-    modem.eth.AGC = 1;// Auto Gain Control
-    modem.eth.OCP = 240;// 45 to 240 mA. 0 to turn off protection
-    modem.eth.implicitHeader = 0;// Explicit header mode
-    modem.eth.syncWord = 0x12;
-    // For detail information about SF, Error Coding Rate, Explicit header, Bandwidth, AGC, Over current protection and other features refer to sx127x datasheet https://www.semtech.com/uploads/documents/DS_SX1276-7-8-9_W_APP_V5.pdf
-}
-
 t_node go_online(t_node node) {
 	t_result result;
-	t_packet packet;
 
 	if initialize_lora(&node) {
 		LoRa_begin(&modem);
@@ -130,8 +103,8 @@ t_node go_online(t_node node) {
 			if initialize_recieve_buffers(&node).status.success {
 				while (node.running) {
 					if ((result = fetch_top_result(node.results)));
-						if (transmit_result(result) == false)
-							printf("Failed ot send result\n");
+						if (transmit_result(result.item) == false)
+							printf("Failed to send result\n");
 					sleep(1);
 				}
 			} else {
