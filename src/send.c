@@ -1,6 +1,6 @@
 #include "../includes/send.h"
 
-bool transmit_result(t_node *node, t_result result) {
+bool transmit_result(t_node *node, t_result *result) {
 	if (result) {
 		/*
 		// manually stoping RxCont mode
@@ -12,7 +12,6 @@ bool transmit_result(t_node *node, t_result result) {
 		/*
 		LoRa_send(&node->modem);
 		*/
-
 		simulate_transmission(result);
 		sleep(1);
 		/*

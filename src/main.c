@@ -1,4 +1,6 @@
 #include "../includes/florel.h"
+#include "../includes/simulate.h"
+#include "../includes/send.h"
 
 bool register_node(t_node *node) {
 	// YODO broadcast to other nodes
@@ -102,7 +104,7 @@ t_node run(t_node *node) {
 	t_result *result;
 
 	while (node->running) {
-		if ((result = fetch_top_result(node->results)));
+		if ((result = fetch_top_result(node->results)))
 			if (transmit_result(result->item) == false)
 				printf("Failed to send result\n");
 		sleep(1);

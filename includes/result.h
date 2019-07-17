@@ -1,6 +1,7 @@
 #ifndef RESULT_H
 #define RESULT_H
 
+#include "utils.h"
 #include "florel.h"
 
 typedef struct s_flags {

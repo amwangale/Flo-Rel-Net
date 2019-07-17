@@ -3,6 +3,7 @@
 
 #include "queue.h"
 #include "threads.h"
+#include "node.h"
 
 #ifndef MHZ
 	#define MHZ 900
@@ -23,5 +24,7 @@
 #ifndef BITDEX // BIT INDEX
 	#define BITDEX(i) i / BIT_WIDTH
 #endif
+
+bool transmit_result(t_node *node, t_result result);
 
 #endif

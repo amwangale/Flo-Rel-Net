@@ -1,7 +1,7 @@
 #ifndef NODE_H
 #define NODE_H
 
-#include "utils.h"
+#include "hash.h"
 #include "queue.h"
 
 #ifndef NODE_ID_WIDTH

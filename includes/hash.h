@@ -25,7 +25,7 @@ t_hash *new_hash(int count) {
 
 void *get(t_hash table, unsigned int key) {
 	if (key >= table.size) return (NULL);
-	
+
 	return (table.hash_table[key]);
 }
 

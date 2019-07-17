@@ -1,8 +1,6 @@
 #ifndef THREADS_H
 #define THREADS_H
 
-#include "utils.h"
-#include "queue.h"
 #include "node.h"
 
 typedef struct s_thread_watcher {

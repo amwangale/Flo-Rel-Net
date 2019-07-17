@@ -2,7 +2,6 @@
 #define QUEUE_H
 
 #include "result.h"
-#include "utils.h"
 
 typedef struct s_item {
 	struct s_item *next;
@@ -21,6 +20,14 @@ t_item *new_item(void) {
 	if (!(item = (t_item*)calloc(1, sizeof(t_item))))
 		return (NULL);
 	return (item);
+}
+
+t_queue *new_queue(void) {
+	t_queue *queue;
+
+	if (!(queue = (t_queue*)calloc(1, sizeof(t_queue))))
+		return (NULL);
+	return (queue);
 }
 
 bool 	push_back(t_queue *queue, void *data);

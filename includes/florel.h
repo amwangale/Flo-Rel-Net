@@ -11,11 +11,5 @@
 #include <string.h>
 
 #include "utils.h"
-#include "hash.h"
-#include "queue.h"
-#include "node.h"
-#include "send.h"
-#include "result.h"
-#include "threads.h"
 
 #endif

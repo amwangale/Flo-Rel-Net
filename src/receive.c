@@ -40,10 +40,10 @@ t_status receive(t_node node) {
 		LoRa_receive(&node->modem);
 		*/
 		if ((result = simulate_receive(node))) {
-			if ((header = strip_header(&data))) {
+			if ((header = strip_header(&result))) {
 				if ((index = get(node.receive_hash, header->id))) {
 					if ((queue = get(node.receive_hash, index))) {
-						if ((message = strip_message(&data))) {
+						if ((message = strip_message(&result))) {
 							push_back(queue, message);
 						}
 					}
