@@ -1,3 +1,6 @@
+[submodule "pigpio"]
+	path = pigpio
+	url = https://github.com/joan2937/pigpio.git
 [submodule "sx1278-LoRa-RaspberryPi"]
 	path = sx1278-LoRa-RaspberryPi
-	url = https://github.com/YandievRuslan/sx1278-LoRa-RaspberryPi.git
+	url = https://github.com/scollet1/sx1278-LoRa-RaspberryPi.git
