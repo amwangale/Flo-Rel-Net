@@ -2,26 +2,22 @@
 #include "../includes/node.h"
 #include "../includes/simulate.h"
 
-t_message strip_message(void data) {
-	float21 f;
-	t_message message;
+t_message strip_message(void *data) {
+	t_message *message;
+	message = new_message();
 
-	f = new_float21();
-	meassage = new_message();
-
-	while (i < MESSAGE_SIZE) {
+	for (int i = 0; i < MESSAGE_SIZE; i += BIT_WIDTH) {
 		memcpy(
 			message->buffer[BITDEX(i)],
 			&data[i], sizeof(float21)
 		);
-		i += BIT_WIDTH;
 	}
 
 	return (message);
 }
 
-t_header strip_header(void data) {
-	t_header header;
+t_header strip_header(void *data) {
+	t_header *header;
 
 	header = new_header(0);
 	memcpy(&header, data, sizeof(header));

@@ -1,6 +1,7 @@
 #include "send.h"
 #include "threads.h"
 #include "simulate.h"
+#include "init.h"
 
 bool register_node(t_node *node) {
 	// YODO broadcast to other nodes
@@ -25,7 +26,7 @@ bool listen_for_data(t_thread_watcher *watcher) {
 		data = pop_front(&watcher->results);
 		if (data) {
 			while (!push_back(
-				*watcher->node->global_results,
+				&(watcher->node->global_results),
 				(void*)data->data
 			) && retry--) {
 				sleep(1);
@@ -48,13 +49,13 @@ bool device_connecting(t_node *node) {
 	return (true);
 }
 
-bool collect_data(t_thread_watcher *watcher) {
+bool collect__device_data(t_thread_watcher *watcher) {
 	int size;
 	int retry;
 	float data;
 
 	float21 *f;
-	t_result result;
+	t_result *result;
 	t_status *parent_status;
 
 	while (watcher->status.running) {
@@ -64,7 +65,7 @@ bool collect_data(t_thread_watcher *watcher) {
 			// receive bound to device
 			if ((data = simulate_collect_data())) {
 				f = float_to_float21((float)data);
-				result->message.buffer[BITDEX(size)] = f;
+				result->message.buffer[BITDEX(size)] = *f;
 				size += BIT_WIDTH;
 			} else {
 				retry--;
@@ -74,7 +75,7 @@ bool collect_data(t_thread_watcher *watcher) {
 		if (size >= MESSAGE_SIZE) {
 			retry = 5;
 			while (!push_back(
-				watcher->node->global_results, result
+				&watcher->node->global_results, result
 			) && retry--) {
 				sleep(1);
 			}
@@ -90,12 +91,12 @@ bool collect_data(t_thread_watcher *watcher) {
 	pthread_exit(&watcher->status);
 }
 
-t_result *fetch_top_result(t_node node) {
-	t_item item;
+t_result *fetch_top_result(t_queue *global_results) {
+	t_item *item;
 	t_result *result;
 
-	if ((item = pop_front(&node->global_results)))
-		result = memcpy(&result, &item.data, sizeof(float * PACKET_SIZE));
+	if ((item = pop_front(global_results)))
+		result = memcpy(&result, &item->data, sizeof(float * PACKET_SIZE));
 
 	return (result);
 }
@@ -103,35 +104,21 @@ t_result *fetch_top_result(t_node node) {
 t_node run(t_node *node) {
 	t_result *result;
 
-	while (node->status->running) {
-		if ((result = fetch_top_result(node->results)))
+	while (node->status.running) {
+		if ((result = fetch_top_result(&node->global_results)))
 			if (transmit_result(node, result) == false)
 				printf("Failed to send result\n");
 		sleep(1);
 		result = NULL;
 	}
 
-	node->status->success = true;
-	return (node);
+	node->status.success = true;
+	return (*node);
 }
 
 t_node go_online(t_node node) {
-	if (initialize_lora(&node)) {
-		LoRa_begin(&node->modem);
-
-		if (initialize_devices(&node).status.success) {
-			if (initialize_recieve_buffers(&node).status.success) {
-				node = run(&node);
-			} else {
-				node.status.failure = true;
-			}
-		} else {
-			node.status.failure = true;
-		}		
-	} else {
-		node.status.failure = true;
-	}
-
+	if (initialize(&node))
+		node = run(&node);
 	return (node);
 }
 

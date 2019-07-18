@@ -1,13 +1,15 @@
 #include "../includes/send.h"
 
 bool transmit_result(t_node *node, t_result *result) {
+	(void)node;
+
 	if (result) {
 		/*
 		// manually stoping RxCont mode
 		LoRa_stop_receive(node->modem);
 		*/
 		
-		result->header->transmission = 1;
+		result->header.flags.transmission = 1;
 
 		/*
 		// copy data we'll sent to buffer
@@ -24,6 +26,6 @@ bool transmit_result(t_node *node, t_result *result) {
 		
 		return (true);
 	}
-	
+
 	return (false);
 }

@@ -1,9 +1,9 @@
-#include "../includes/florel.h"
+#include "../includes/result.h"
 
 bool set_header(t_result *result) {
 	if (result) {
-		if (result->header) {
-			result->header->flags->transmission = 1;
+		if (&result->header) {
+			result->header.flags.transmission = 1;
 			return (true);
 		}
 	}
@@ -11,6 +11,8 @@ bool set_header(t_result *result) {
 }
 
 bool set_message(t_message message, void *data) {
+	(void)message;
+	(void)data;
 	// memcpy(&message)
 	return (true);
 }

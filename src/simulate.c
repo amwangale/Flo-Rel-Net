@@ -40,9 +40,9 @@ bool simulate_transmission(t_result *result) {
 	/*
 	
 	*/
-	printf("HEADER || %f\n [", (float)*result->header);
+	printf("HEADER || %f\n [", float21_to_float(result->header));
 	for (int i = 0; i < MESSAGE_SIZE; i += BIT_WIDTH) {
-		printf("%f ", (float)*result->message.buffer[BITDEX(i)]);
+		printf("%f ", float21_to_float(result->message.buffer[BITDEX(i)]));
 	}
 	printf("]\n");
 
