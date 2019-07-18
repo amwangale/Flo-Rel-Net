@@ -1,6 +1,6 @@
-#include "../includes/florel.h"
-#include "../includes/simulate.h"
-#include "../includes/send.h"
+#include "send.h"
+#include "threads.h"
+#include "simulate.h"
 
 bool register_node(t_node *node) {
 	// YODO broadcast to other nodes
@@ -90,9 +90,9 @@ bool collect_data(t_thread_watcher *watcher) {
 	pthread_exit(&watcher->status);
 }
 
-t_result fetch_top_result(t_node node) {
+t_result *fetch_top_result(t_node node) {
 	t_item item;
-	t_result result;
+	t_result *result;
 
 	if ((item = pop_front(&node->global_results)))
 		result = memcpy(&result, &item.data, sizeof(float * PACKET_SIZE));
@@ -103,30 +103,33 @@ t_result fetch_top_result(t_node node) {
 t_node run(t_node *node) {
 	t_result *result;
 
-	while (node->running) {
+	while (node->status->running) {
 		if ((result = fetch_top_result(node->results)))
-			if (transmit_result(result->item) == false)
+			if (transmit_result(node, result) == false)
 				printf("Failed to send result\n");
 		sleep(1);
 		result = NULL;
 	}
+
+	node->status->success = true;
+	return (node);
 }
 
 t_node go_online(t_node node) {
 	if (initialize_lora(&node)) {
-		LoRa_begin(&modem);
+		LoRa_begin(&node->modem);
 
 		if (initialize_devices(&node).status.success) {
 			if (initialize_recieve_buffers(&node).status.success) {
 				node = run(&node);
 			} else {
-				node->status.failure = true;
+				node.status.failure = true;
 			}
 		} else {
-			node->status.failure = true;
+			node.status.failure = true;
 		}		
 	} else {
-		node->status.failure = true;
+		node.status.failure = true;
 	}
 
 	return (node);

@@ -11,7 +11,7 @@ t_result *simulate_random_result(t_node node) {
 	if (!(result = new_result(node.id)))
 		return (NULL);
 	
-	result->header->flags.transmission = 1;
+	result->header.flags.transmission = 1;
 
 	point = 5.0;
 	for (int i = 0; i < MESSAGE_SIZE; i += BIT_WIDTH) {
@@ -36,13 +36,13 @@ float simulate_collect_data(void) {
 	return ((float)rand() / (float)(RAND_MAX));
 }
 
-bool simulate_transmission(t_result result) {
+bool simulate_transmission(t_result *result) {
 	/*
 	
 	*/
-	printf("HEADER || %f\n [", (float)*result.header);
+	printf("HEADER || %f\n [", (float)*result->header);
 	for (int i = 0; i < MESSAGE_SIZE; i += BIT_WIDTH) {
-		printf("%f ", (float)*result->message[BITDEX(i)]);
+		printf("%f ", (float)*result->message.buffer[BITDEX(i)]);
 	}
 	printf("]\n");
 

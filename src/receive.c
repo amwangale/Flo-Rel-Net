@@ -3,10 +3,10 @@
 #include "../includes/simulate.h"
 
 t_message strip_message(void data) {
-	float15 f;
+	float21 f;
 	t_message message;
 
-	f = new_float15();
+	f = new_float21();
 	meassage = new_message();
 
 	while (i < MESSAGE_SIZE) {
@@ -44,7 +44,7 @@ t_status receive(t_node node) {
 				if ((index = get(node.receive_hash, header->id))) {
 					if ((queue = get(node.receive_hash, index))) {
 						if ((message = strip_message(&result))) {
-							push_back(queue, message);
+							push_back(&queue, message);
 						}
 					}
 				}

@@ -1,6 +1,8 @@
 #ifndef HASH_H
 #define HASH_H
 
+#include "utils.h"
+
 typedef struct s_value {
 	/*
 	can't have a

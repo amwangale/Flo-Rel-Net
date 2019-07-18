@@ -5,8 +5,8 @@ bool initialize_recieve_buffers(t_node *node) {
 	t_queue *queue;
 	t_thread_watcher *watcher;
 	
-	if (watcher = new_thread_watcher())
-		if (node->results_hash = new_hash(node->neighbor_count))
+	if ((watcher = new_thread_watcher()))
+		if ((node->results_hash = *new_hash(node->neighbor_count)))
 
 			for (unsigned int i = 0; i < node->neighbor_count; i++) {
 				// checking if index exists
@@ -34,8 +34,8 @@ bool initialize_devices(t_node *node) {
 	t_queue *queue;
 	t_thread_watcher *watcher;
 
-	if (watcher = new_thread_watcher())
-		if (node->device_hash = new_hash(node->device_count))
+	if ((watcher = new_thread_watcher()))
+		if ((node->device_hash = *new_hash(node->device_count)))
 			
 			for (unsigned int i = 0; i < node->device_count; i++) {
 				if (!get(node->device_hash, i)) {
@@ -43,11 +43,11 @@ bool initialize_devices(t_node *node) {
 						if (!set(node->device_hash, i, queue)) {
 							printf("Failed to create device queue");
 						} else {
-							error = pthread_create(&watcher.thread, NULL, collect_device_data, &watcher);
+							error = pthread_create(watcher->thread, NULL, collect_device_data, &watcher);
 							if (error)  {
 								printf("Pthread failed to create\n");
 							} else {
-								pthread_join(watcher.thread, &error);
+								pthread_join(watcher->thread, error);
 							}	
 						}
 					}
@@ -59,6 +59,8 @@ bool initialize_devices(t_node *node) {
 
 
 bool initialize_lora(t_node *node) {
+	(void)node;
+	/*
 	LoRa_ctl modem;
 	float21 buffer[PACKET_SIZE / BIT_WIDTH];
 
@@ -83,7 +85,8 @@ bool initialize_lora(t_node *node) {
     modem.eth.syncWord = 0x12;
 
     node->modem = modem;
-    
+    */
+
     return (true);
     // For detail information about SF, Error Coding Rate, Explicit header, Bandwidth, AGC, Over current protection and other features refer to sx127x datasheet https://www.semtech.com/uploads/documents/DS_SX1276-7-8-9_W_APP_V5.pdf
 }
