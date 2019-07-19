@@ -1,6 +1,8 @@
 #ifndef SIMULATE_H
 #define SIMULATE_H
 
+#include "result.h"
+#include "threads.h"
 #include "node.h"
 
 float 		simulate_collect_data(void);

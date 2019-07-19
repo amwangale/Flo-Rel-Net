@@ -1,4 +1,8 @@
-#include "florel.h"
+#include "../includes/florel.h"
+#include "../includes/node.h"
+#include "../includes/send.h"
+#include "../includes/simulate.h"
+#include "../includes/init.h"
 
 bool register_node(t_node *node) {
 	// YODO broadcast to other nodes

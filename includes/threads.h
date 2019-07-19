@@ -1,6 +1,8 @@
 #ifndef THREADS_H
 #define THREADS_H
 
+#include "utils.h"
+#include "queue.h"
 #include "node.h"
 
 typedef struct s_thread_watcher {
@@ -8,6 +10,7 @@ typedef struct s_thread_watcher {
 	t_status status;
 	t_queue results;
 
+	// parent
 	t_node *node;
 } t_thread_watcher;
 

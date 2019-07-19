@@ -1,7 +1,20 @@
 #ifndef RESULT_H
 #define RESULT_H
 
+#include "florel.h"
 #include "utils.h"
+
+#ifndef HEADER_SIZE
+	#define HEADER_SIZE BIT_WIDTH
+#endif
+
+#ifndef MESSAGE_SIZE
+	#define MESSAGE_SIZE MHZ - HEADER_SIZE
+#endif
+
+#ifndef PACKET_SIZE
+	#define PACKET_SIZE HEADER_SIZE + MESSAGE_SIZE
+#endif
 
 typedef struct s_flags {
 	unsigned int transmission: 1;
@@ -25,10 +38,10 @@ typedef struct s_result {
 	t_message message;
 } t_result;
 
-t_flags *new_flags(void);
-t_header *new_header(short id);
-t_message *new_message(void);
-t_result *new_result(short id);
-float 	header_to_float(t_header header);
+t_flags 	*new_flags(void);
+t_header 	*new_header(short id);
+t_message 	*new_message(void);
+t_result 	*new_result(short id);
+float 		header_to_float(t_header header);
 
 #endif

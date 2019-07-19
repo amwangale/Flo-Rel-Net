@@ -1,3 +1,5 @@
+#include "../includes/florel.h"
+#include "../includes/utils.h"
 #include "../includes/node.h"
 
 t_status *get_status(t_node *node) {

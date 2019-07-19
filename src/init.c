@@ -1,4 +1,6 @@
+#include "../includes/florel.h"
 #include "../includes/init.h"
+#include "../includes/threads.h"
 
 bool initialize_recieve_buffers(t_node *node) {
 	int error;

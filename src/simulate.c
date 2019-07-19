@@ -1,7 +1,6 @@
-#include "../includes/node.h"
+#include "../includes/florel.h"
 #include "../includes/result.h"
-#include "../includes/utils.h"
-#include "../includes/simulate.h"
+#include "../includes/node.h"
 
 t_result *simulate_random_result(t_node *node) {
 	float point;

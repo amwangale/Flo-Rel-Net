@@ -1,5 +1,4 @@
-#include "../includes/send.h"
-#include "../includes/node.h"
+#include "../includes/receive.h"
 #include "../includes/simulate.h"
 
 t_message *strip_message(t_result *result) {

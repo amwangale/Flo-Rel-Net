@@ -18,8 +18,9 @@ typedef struct s_float21 {
 	unsigned int value: 20;
 } float21;
 
-float21 *new_float21(void);
-float 	float21_to_float(float21 num);
-float21 *float_to_float21(float num);
+t_status 	*new_status(void);
+float21 	*new_float21(void);
+float 		float21_to_float(float21 num);
+float21 	*float_to_float21(float num);
 
 #endif

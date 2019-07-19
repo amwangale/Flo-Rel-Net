@@ -1,4 +1,6 @@
-#include "../includes/send.h"
+#include "../includes/node.h"
+#include "../includes/result.h"
+#include "../includes/simulate.h"
 
 bool transmit_result(t_node *node, t_result *result) {
 	(void)node;

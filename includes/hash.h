@@ -1,7 +1,7 @@
 #ifndef HASH_H
 #define HASH_H
 
-#include "queue.h"
+#include "florel.h"
 
 typedef struct s_value {
 	/*
@@ -17,8 +17,8 @@ typedef struct s_hash {
 	unsigned int size;
 } t_hash;
 
-void *get(t_hash table, unsigned int key);
-bool set(t_hash table, unsigned int key, void *data);
+void 	*get(t_hash table, unsigned int key);
+bool 	set(t_hash table, unsigned int key, void *data);
 t_hash *new_hash(int count);
 
 #endif

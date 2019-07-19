@@ -2,6 +2,9 @@
 #define NODE_H
 
 #include "hash.h"
+#include "queue.h"
+#include "utils.h"
+#include "florel.h"
 
 #ifndef NODE_ID_WIDTH
 	#define NODE_ID_WIDTH 10
@@ -25,5 +28,8 @@ typedef struct s_node {
 	LoRa_ctl modem;
 	t_locks locks;
 } t_node;
+
+t_status 	*get_status(t_node *node);
+t_node 		*new_node(char **argv);
 
 #endif
