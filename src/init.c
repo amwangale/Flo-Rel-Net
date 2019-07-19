@@ -1,6 +1,7 @@
 #include "../includes/florel.h"
 #include "../includes/init.h"
 #include "../includes/threads.h"
+#include "../sx1278-LoRa-RaspberryPi/incl/LoRa.h"
 
 bool initialize_recieve_buffers(t_node *node) {
 	int error;

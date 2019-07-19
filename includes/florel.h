@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include <time.h>
 #include <string.h>
+#include <pigpio.h>
 
 #include "../sx1278-LoRa-RaspberryPi/incl/LoRa.h"
 
