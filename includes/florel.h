@@ -10,7 +10,7 @@
 #include <time.h>
 #include <string.h>
 
-#include "../sx1278-LoRa-RaspberryPi/LoRa.h"
+#include "../sx1278-LoRa-RaspberryPi/incl/LoRa.h"
 
 #ifndef MHZ
 	#define MHZ 900

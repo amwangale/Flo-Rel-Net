@@ -6,13 +6,15 @@ CC = gcc
 
 SRC_DIR = src
 
-CFLAGS  = -Wall -Werror -Wextra -g
+#CFLAGS  = -Wall -Werror -Wextra -g
 #-fsanitize=address
 
-INCL = -I includes -pthread -lrt -lm sx1278-LoRa-RaspberryPi/LoRa.h
+LIBGPIO = pigpio/
 
-GPIOLIB = pigpio/
-LORALIB = sx1278-LoRa-RaspberryPi/
+DIRLORA = sx1278-LoRa-RaspberryPi/
+LIBLORA = $(DIRLORA)liblora.a
+
+INCL = -I includes -pthread -lrt -lm -L$(LIBGPIO) -lpigpio
 
 SRC_DIR = src
 SRC_FILES = main.c \
@@ -32,13 +34,12 @@ SRC = $(addprefix $(SRC_DIR)/, $(SRC_FILES))
 RM = rm -fr
 
 $(NAME):
-		$(MAKE) -C $(GPIOLIB)
-		$(MAKE) -C $(LORALIB)
-		$(CC) $(CFLAGS) $(INCL) $(SRC) sx1278-LoRa-RaspberryPi/LoRa.c -o $(NAME)
+		$(MAKE) -C $(DIRLORA)
+		$(MAKE) -C $(LIBGPIO)
+		$(CC) $(CFLAGS) $(INCL) $(SRC) $(LIBLORA) -o $(NAME)
 
 $(TESTING):
 		$(MAKE) -C $(GPIOLIB)
-		$(MAKE) -C $(LORALIB)
 		$(CC) $(CFLAGS) $(INCL) $(SRC) -D TESTING -o $(NAME)
 
 all: $(NAME)
@@ -51,4 +52,4 @@ clean:
 fclean: clean
 		$(RM) $(NAME)
 
-re: fclean $(NAME)
+re: fclean $(NAME) fclean $(DIRLORA)
