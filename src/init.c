@@ -1,7 +1,7 @@
 #include "../includes/init.h"
 
 bool initialize_recieve_buffers(t_node *node) {
-	int *error;
+	int error;
 	t_queue *queue;
 	t_thread_watcher *watcher;
 	
@@ -15,7 +15,10 @@ bool initialize_recieve_buffers(t_node *node) {
 					if (!set(node->results_hash, i, queue)) {
 						printf("Failed to create results queue");
 					} else {
-						error = pthread_create(&watcher->thread, NULL, &listen_for_data, &watcher);
+						error = pthread_create(
+							&watcher->thread, NULL,
+							listen_for_data, &watcher
+						);
 						if (error)  {
 							printf("Pthread failed to create\n");
 						} else {
@@ -31,7 +34,7 @@ bool initialize_recieve_buffers(t_node *node) {
 }
 
 bool initialize_devices(t_node *node) {
-	int *error;
+	int error;
 	t_queue *queue;
 	t_thread_watcher *watcher;
 
@@ -44,7 +47,10 @@ bool initialize_devices(t_node *node) {
 					if (!set(node->device_hash, i, queue)) {
 						printf("Failed to create device queue");
 					} else {
-						error = &pthread_create(&watcher->thread, NULL, &collect_device_data, &watcher);
+						error = pthread_create(
+							&watcher->thread, NULL,
+							&collect_device_data, &watcher
+						);
 						if (error)  {
 							printf("Pthread failed to create\n");
 						} else {

@@ -22,7 +22,7 @@ t_thread_watcher *new_thread_watcher(t_node *node) {
 	return (twr);
 }
 
-bool collect_device_data(t_thread_watcher *watcher);
-bool listen_for_data(t_thread_watcher *watcher);
+void *collect_device_data(void *arg);
+void *listen_for_data(void *arg);
 
 #endif

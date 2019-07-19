@@ -61,4 +61,6 @@ t_result *new_result(short id) {
 	return (result);
 }
 
+float 	header_to_float(t_header header);
+
 #endif

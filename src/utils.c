@@ -1,5 +1,24 @@
 #include "../includes/utils.h"
 
+float float21_to_float(float21 num) {
+	float value;
+	float mantissa;
+	float fraction;
+
+	// drop the last 10 bits
+	fraction = (float)((num.value << 10) >> 10);
+	// drop 100 places
+	fraction /= 100;
+
+	mantissa = (float)(num.value >> 10);
+
+	value = mantissa
+		+ fraction
+		* (num.sign & 1)? 1.0 : -1.0;
+
+	return (value);
+}
+
 float21 *float_to_float21(float num) {
 	if (num > pow(2, 10)) return (NULL);
 

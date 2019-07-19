@@ -9,26 +9,19 @@ bool register_node(t_node *node) {
 	return (true);
 }
 
-t_node *configure(t_node *node) {
-	node->status.running = true;
-
-	if (register_node(node)) return (node);
-	else return (NULL);
-}
-
-bool listen_for_data(t_thread_watcher *watcher) {
+void *listen_for_data(void *arg) {
 	t_item *data;
 	t_status *parent_status;
-	int retry;
+	bool retry;
+	t_thread_watcher *watcher;
 
+	watcher = arg;
 	while (watcher->status.running) {
 		retry = 5;
 		data = pop_front(&watcher->results);
 		if (data) {
-			while (!push_back(
-				&(watcher->node->global_results),
-				(void*)data->data
-			) && retry--) {
+			while (retry > 0) {
+// retry = push_back(&watcher->node->global_results, (void*)data->data);// == false)? 1 : 5;
 				sleep(1);
 			}
 			data = NULL;
@@ -41,7 +34,7 @@ bool listen_for_data(t_thread_watcher *watcher) {
 	}
 
 	pthread_exit(&watcher->status);
-	return (true);
+	return (NULL);
 }
 
 bool device_connecting(t_node *node) {
@@ -49,15 +42,17 @@ bool device_connecting(t_node *node) {
 	return (true);
 }
 
-bool collect__device_data(t_thread_watcher *watcher) {
+void *collect_device_data(void *arg) {
 	int size;
 	int retry;
 	float data;
+	t_thread_watcher *watcher;
 
 	float21 *f;
 	t_result *result;
 	t_status *parent_status;
 
+	watcher = arg;
 	while (watcher->status.running) {
 		size = 0;
 		retry = 5;
@@ -89,6 +84,7 @@ bool collect__device_data(t_thread_watcher *watcher) {
 	}
 
 	pthread_exit(&watcher->status);
+	return (NULL);
 }
 
 t_result *fetch_top_result(t_queue *global_results) {
@@ -96,12 +92,12 @@ t_result *fetch_top_result(t_queue *global_results) {
 	t_result *result;
 
 	if ((item = pop_front(global_results)))
-		result = memcpy(&result, &item->data, sizeof(float * PACKET_SIZE));
+		result = memcpy(&result, &item->data, sizeof(float) * PACKET_SIZE);
 
 	return (result);
 }
 
-t_node run(t_node *node) {
+t_node *run(t_node *node) {
 	t_result *result;
 
 	while (node->status.running) {
@@ -113,27 +109,43 @@ t_node run(t_node *node) {
 	}
 
 	node->status.success = true;
-	return (*node);
-}
-
-t_node go_online(t_node node) {
-	if (initialize(&node))
-		node = run(&node);
 	return (node);
 }
 
-int main(argc, **argv) {
+t_node *go_online(t_node *node) {
+	if (initialize(node))
+		node = run(node);
+	return (node);
+}
+
+t_node *configure(t_node *node) {
+	node->status.running = true;
+
+	if (register_node(node)) return (node);
+	else return (NULL);
+}
+
+int main(int argc, char **argv) {
 	srand((unsigned int)time(NULL));
-	t_node node;
+	t_node *node;
 
 	if (argc == 2) {
-		if (node = new_node(argv));
-			if (configure(node).status)
-				if (get_status(go_online(node)).success)
+		if ((node = new_node(argv))) {
+			if (get_status(configure(node))) {
+				if (get_status(go_online(node))->success) {
 					return (0);
-		return (1);
+				} else {
+					return (-1);
+				}
+			} else {
+				return (-1);
+			}
+		} else {
+			return (-1);
+		}
 	} else {
 		printf("Node ID required for testing\n");
+		return (1);
 	}
 	return (0);
 }

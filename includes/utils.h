@@ -34,6 +34,7 @@ t_status *new_status(void) {
 	return (status);
 }
 
+float 	float21_to_float(float21 num);
 float21 *float_to_float21(float num);
 
 #endif
