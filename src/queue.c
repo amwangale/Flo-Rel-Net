@@ -1,5 +1,21 @@
 #include "../includes/queue.h"
 
+t_item *new_item(void) {
+	t_item *item;
+
+	if (!(item = (t_item*)calloc(1, sizeof(t_item))))
+		return (NULL);
+	return (item);
+}
+
+t_queue *new_queue(void) {
+	t_queue *queue;
+
+	if (!(queue = (t_queue*)calloc(1, sizeof(t_queue))))
+		return (NULL);
+	return (queue);
+}
+
 bool push_back(t_queue *queue, void *data) {
 	t_item *item;
 

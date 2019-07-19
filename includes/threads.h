@@ -11,18 +11,8 @@ typedef struct s_thread_watcher {
 	t_node *node;
 } t_thread_watcher;
 
-t_thread_watcher *new_thread_watcher(t_node *node) {
-	t_thread_watcher *twr;
-
-	if (!(twr = (t_thread_watcher*)calloc(1, sizeof(t_thread_watcher))))
-		return (NULL);
-	twr->status = *new_status();
-	twr->results = *new_queue();
-	twr->node = node;
-	return (twr);
-}
-
-void *collect_device_data(void *arg);
-void *listen_for_data(void *arg);
+t_thread_watcher 	*new_thread_watcher(t_node *node);
+void 				*collect_device_data(void *arg);
+void 				*listen_for_data(void *arg);
 
 #endif

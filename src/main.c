@@ -1,7 +1,4 @@
-#include "send.h"
-#include "threads.h"
-#include "simulate.h"
-#include "init.h"
+#include "florel.h"
 
 bool register_node(t_node *node) {
 	// YODO broadcast to other nodes
@@ -100,6 +97,7 @@ t_result *fetch_top_result(t_queue *global_results) {
 t_node *run(t_node *node) {
 	t_result *result;
 
+	//fork here receive
 	while (node->status.running) {
 		if ((result = fetch_top_result(&node->global_results)))
 			if (transmit_result(node, result) == false)
