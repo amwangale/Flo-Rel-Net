@@ -49,11 +49,13 @@ void *sending(void *arg) {
 	t_thread_watcher *watcher;
 
 	watcher = arg;
+	printf("running %d\n", watcher->status.running);
+	printf("success %d\n", watcher->status.success);
+	printf("failure %d\n", watcher->status.failure);
 	while (watcher->status.running) {
 		if ((result = fetch_top_result(&watcher->node->global_results)))
 			if (transmit_result(watcher->node, result) == false)
 				printf("Failed to send result\n");
-		sleep(1);
 		result = NULL;
 
 		parent_status = get_status(watcher->node);

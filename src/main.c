@@ -103,6 +103,7 @@ void *collect_device_data(void *arg) {
 }
 
 t_node *run(t_node *node) {
+	printf("Running node\n");
 	while (node->status.running == true) {
 		// regularly check on threads
 		// read input from keyboard

@@ -34,7 +34,12 @@ t_result *simulate_receive(t_node *node) {
 }
 
 float simulate_collect_data(void) {
-	return ((float)rand() / (float)(RAND_MAX));
+	float data;
+
+	data = (float)rand() / (float)(RAND_MAX);
+	printf("Collected simulated data %f\n", data);
+
+	return (data);
 }
 
 bool simulate_transmission(t_result *result) {

@@ -23,7 +23,11 @@ t_status *new_status(bool initial_status) {
 	
 	if (!(status = (t_status*)calloc(1, sizeof(t_status))))
 		return (NULL);
+	
 	status->running = initial_status;
+	status->success = true;
+	status->failure = false;
+
 	return (status);
 }
 

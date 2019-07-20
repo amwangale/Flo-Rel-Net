@@ -8,8 +8,8 @@
 #endif
 
 typedef struct s_status {
-	bool running;
 	bool success;
+	bool running;
 	bool failure;
 } t_status;
 
