@@ -31,3 +31,37 @@ bool transmit_result(t_node *node, t_result *result) {
 
 	return (false);
 }
+
+t_result *fetch_top_result(t_queue *global_results) {
+	t_item *item;
+	t_result *result;
+
+	if ((item = pop_front(global_results)))
+		result = memcpy(&result, &item->data, sizeof(float) * PACKET_SIZE);
+
+	return (result);
+}
+
+void *sending(void *arg) {
+	t_queue *queue;
+	t_result *result;
+	t_status *parent_status;
+	t_thread_watcher *watcher;
+
+	watcher = arg;
+	while (watcher->status.running) {
+		if ((result = fetch_top_result(&watcher->node->global_results)))
+			if (transmit_result(watcher->node, result) == false)
+				printf("Failed to send result\n");
+		sleep(1);
+		result = NULL;
+
+		parent_status = get_status(watcher->node);
+		if (parent_status)
+			if (parent_status->running == false)
+				watcher->status.running = false;
+	}
+
+	pthread_exit(&watcher->status);
+	return (NULL);
+}

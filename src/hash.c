@@ -10,13 +10,25 @@ t_hash *new_hash(int count) {
 
 void *get(t_hash table, unsigned int key) {
 	if (key >= table.size) return (NULL);
+	
+	void *value;
+	value = NULL;
 
-	return (table.hash_table[key]);
+	if (pthread_mutex_trylock(&table.lock.lock)) {
+		value = table.hash_table[key];
+		pthread_mutex_unlock(&table.lock.lock);
+	}
+	return (value);
 }
 
 bool set(t_hash table, unsigned int key, void *data) {
 	if (key >= table.size) return (false);
 	
-	table.hash_table[key] = data;
-	return (true);
+	if (pthread_mutex_trylock(&table.lock.lock)) {
+		table.hash_table[key] = data;
+		pthread_mutex_unlock(&table.lock.lock);
+		return (true);
+	}
+	
+	return (false);
 }

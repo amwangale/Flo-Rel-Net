@@ -1,4 +1,6 @@
 #include "../includes/florel.h"
+#include "../includes/send.h"
+#include "../includes/receive.h"
 #include "../includes/init.h"
 #include "../includes/threads.h"
 #include "../sx1278-LoRa-RaspberryPi/incl/LoRa.h"
@@ -68,6 +70,53 @@ bool initialize_devices(t_node *node) {
 	return (true);
 }
 
+bool initialize_receiver(t_node *node) {
+	int error;
+	t_thread_watcher *watcher;
+
+	if ((watcher = new_thread_watcher(node))) {
+		node->neighbor_map = *new_hash(node->neighbor_count);
+
+		for (unsigned int i = 0; i < node->neighbor_count; i++) {
+			if (!get(node->neighbor_map, i)) {
+				if (!set(node->neighbor_map, i, &i)) {
+					printf("Failed to create device queue");
+				} else {
+					error = pthread_create(
+						&watcher->thread, NULL,
+						&receiving, &watcher
+					);
+					if (error)  {
+						printf("Pthread failed to create\n");
+					} else {
+						pthread_join(watcher->thread, (void*)&error);
+					}	
+				}
+			}
+		}
+	}
+
+	return (true);
+}
+
+bool initialize_sender(t_node *node) {
+	int error;
+	t_thread_watcher *watcher;
+
+	if ((watcher = new_thread_watcher(node))) {
+		error = pthread_create(
+			&watcher->thread, NULL,
+			&sending, &watcher
+		);
+		if (error)  {
+			printf("Pthread failed to create\n");
+		} else {
+			pthread_join(watcher->thread, (void*)&error);
+		}	
+	}
+
+	return (true);
+}
 
 bool initialize_lora(t_node *node) {
 	(void)node;

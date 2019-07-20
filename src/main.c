@@ -11,9 +11,10 @@ bool register_node(t_node *node) {
 }
 
 void *listen_for_data(void *arg) {
+	bool retry;
+
 	t_item *data;
 	t_status *parent_status;
-	bool retry;
 	t_thread_watcher *watcher;
 
 	watcher = arg;
@@ -88,29 +89,12 @@ void *collect_device_data(void *arg) {
 	return (NULL);
 }
 
-t_result *fetch_top_result(t_queue *global_results) {
-	t_item *item;
-	t_result *result;
-
-	if ((item = pop_front(global_results)))
-		result = memcpy(&result, &item->data, sizeof(float) * PACKET_SIZE);
-
-	return (result);
-}
-
 t_node *run(t_node *node) {
-	t_result *result;
-
-	//fork here receive
-	while (node->status.running) {
-		if ((result = fetch_top_result(&node->global_results)))
-			if (transmit_result(node, result) == false)
-				printf("Failed to send result\n");
-		sleep(1);
-		result = NULL;
+	while (node->status.running == true) {
+		// regularly check on threads
+		// read input from keyboard
 	}
 
-	node->status.success = true;
 	return (node);
 }
 

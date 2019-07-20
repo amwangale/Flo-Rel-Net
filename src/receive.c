@@ -1,3 +1,4 @@
+#include "../includes/node.h"
 #include "../includes/receive.h"
 #include "../includes/simulate.h"
 
@@ -24,21 +25,26 @@ t_header *strip_header(void *data) {
 	return (header);
 }
 
-t_status receive(t_node *node) {
+void *receiving(void *arg) {
 	int index;
-	t_queue *queue;
-	t_result *result;
-	t_header *header;
-	t_message *message;
+	int neighbor_id;
 
-	while (node->status.running) {
+	t_queue *queue;
+	t_header *header;
+	t_result *result;
+	t_message *message;
+	t_status *parent_status;
+	t_thread_watcher *watcher;
+
+	watcher = arg;
+	while (watcher->status.running) {
 		/*
 		LoRa_receive(&node->modem);
 		*/
-		if ((result = simulate_receive(node))) {
+		if ((result = simulate_receive(watcher->node))) {
 			if ((header = strip_header(result))) {
-				if ((index = *(int*)get(node->receive_hash, header->id))) {
-					if ((queue = (t_queue*)get(node->receive_hash, index))) {
+				if ((index = *(int*)get(watcher->node->neighbor_map, header->id))) {
+					if ((queue = (t_queue*)get(watcher->node->receive_hash, index))) {
 						if ((message = strip_message(result))) {
 							push_back(queue, message);
 						}
@@ -46,7 +52,14 @@ t_status receive(t_node *node) {
 				}
 			}
 		}
+		result = NULL;
+
+		parent_status = get_status(watcher->node);
+		if (parent_status)
+			if (parent_status->running == false)
+				watcher->status.running = false;
 	}
 
-	return (node->status);
+	pthread_exit(&watcher->status);
+	return (NULL);
 }

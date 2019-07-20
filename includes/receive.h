@@ -4,6 +4,6 @@
 #include "utils.h"
 #include "node.h"
 
-t_status receive(t_node *node);
+void 		*receiving(void *arg);
 
 #endif

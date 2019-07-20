@@ -18,6 +18,11 @@ typedef struct s_float21 {
 	unsigned int value: 20;
 } float21;
 
+
+typedef struct s_lock {
+	pthread_mutex_t lock;
+} t_lock;
+
 t_status 	*new_status(void);
 float21 	*new_float21(void);
 float 		float21_to_float(float21 num);

@@ -14,6 +14,8 @@ typedef struct s_item {
 typedef struct s_queue {
 	t_item *front;
 	t_item *back;
+	
+	t_lock lock;
 } t_queue;
 
 bool 	push_back(t_queue *queue, void *data);
