@@ -37,6 +37,7 @@ void *receiving(void *arg) {
 	t_thread_watcher *watcher;
 
 	watcher = arg;
+	printf("%i\n", watcher->status.running);
 	while (watcher->status.running) {
 		/*
 		LoRa_receive(&node->modem);

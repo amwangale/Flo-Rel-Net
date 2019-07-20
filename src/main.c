@@ -6,8 +6,21 @@
 
 bool register_node(t_node *node) {
 	// YODO broadcast to other nodes
-	(void)node;
-	return (true);
+	if (!node) {
+		printf("Node does not exist\n");
+		return (false);
+	} else {
+		printf("Node exists\n");
+		node->neighbor_count = 1;
+		node->device_count = 1;
+		
+		node->results_hash = *new_hash(1);
+		node->device_hash = *new_hash(1);
+		node->receive_hash = *new_hash(1);
+		node->neighbor_map = *new_hash(1);
+		node->global_results = *new_queue();
+		return (true);
+	}
 }
 
 void *listen_for_data(void *arg) {
@@ -107,8 +120,13 @@ t_node *go_online(t_node *node) {
 t_node *configure(t_node *node) {
 	node->status.running = true;
 
-	if (register_node(node)) return (node);
-	else return (NULL);
+	if (register_node(node)) {
+		printf("Node registered\n");
+		return (node);
+	} else {
+		printf("Failed to register node\n");
+		return (NULL);
+	}
 }
 
 int main(int argc, char **argv) {
@@ -117,16 +135,19 @@ int main(int argc, char **argv) {
 
 	if (argc == 2) {
 		if ((node = new_node(argv))) {
-			if (get_status(configure(node))) {
+			if (configure(node)) {
 				if (get_status(go_online(node))->success) {
 					return (0);
 				} else {
+					printf("Failed to go online\n");
 					return (-1);
 				}
 			} else {
+				printf("Failed to configure node\n");
 				return (-1);
 			}
 		} else {
+			printf("Failed to crete node\n");
 			return (-1);
 		}
 	} else {

@@ -22,6 +22,6 @@ typedef struct s_hash {
 
 void 	*get(t_hash table, unsigned int key);
 bool 	set(t_hash table, unsigned int key, void *data);
-t_hash *new_hash(int count);
+t_hash 	*new_hash(int count);
 
 #endif

@@ -18,7 +18,7 @@ bool initialize_recieve_buffers(t_node *node) {
 			if (!get(node->receive_hash, i)) {
 				if ((queue = new_queue())) {
 					if (!set(node->results_hash, i, queue)) {
-						printf("Failed to create results queue");
+						printf("Failed to create results queue\n");
 					} else {
 						error = pthread_create(
 							&watcher->thread, NULL,
@@ -50,7 +50,7 @@ bool initialize_devices(t_node *node) {
 			if (!get(node->device_hash, i)) {
 				if ((queue = new_queue())) {
 					if (!set(node->device_hash, i, queue)) {
-						printf("Failed to create device queue");
+						printf("Failed to create device queue %i\n", i);
 					} else {
 						error = pthread_create(
 							&watcher->thread, NULL,
@@ -80,7 +80,7 @@ bool initialize_receiver(t_node *node) {
 		for (unsigned int i = 0; i < node->neighbor_count; i++) {
 			if (!get(node->neighbor_map, i)) {
 				if (!set(node->neighbor_map, i, &i)) {
-					printf("Failed to create device queue");
+					printf("Failed to create device queue %i\n", i);
 				} else {
 					error = pthread_create(
 						&watcher->thread, NULL,
@@ -94,6 +94,8 @@ bool initialize_receiver(t_node *node) {
 				}
 			}
 		}
+	} else {
+		printf("Failed to create receiver thread\n");
 	}
 
 	return (true);
@@ -119,7 +121,8 @@ bool initialize_sender(t_node *node) {
 }
 
 bool initialize_lora(t_node *node) {
-	(void)node;
+	if (!node) return (false);
+
 	/*
 	LoRa_ctl modem;
 	float21 buffer[PACKET_SIZE / BIT_WIDTH];
@@ -127,7 +130,7 @@ bool initialize_lora(t_node *node) {
     // See for typedefs, enumerations and there values in LoRa.h header file
     modem.spiCS = 0; // Raspberry SPI CE pin number
     
-    modem.rx.callback = rx_f;
+    modem.rx.callback = receiving;
     modem.rx.data.buf = buffer;
 
     modem.eth.preambleLen = 6;
@@ -148,15 +151,23 @@ bool initialize_lora(t_node *node) {
     */
 
     return (true);
+    
     // For detail information about SF, Error Coding Rate, Explicit header, Bandwidth, AGC, Over current protection and other features refer to sx127x datasheet https://www.semtech.com/uploads/documents/DS_SX1276-7-8-9_W_APP_V5.pdf
 }
 
 bool initialize(t_node *node) {
 	if (initialize_lora(node)) {
+		printf("LoRa initialized\n");
+		
+		/*
 		LoRa_begin(&node->modem);
+		*/
 
 		if (initialize_devices(node)) {
+			printf("Devices initialized\n");
+
 			if (initialize_recieve_buffers(node)) {
+				printf("Receive buffers initialized\n");
 				node->status.success = true;
 				return (true);
 			} else {

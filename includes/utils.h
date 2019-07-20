@@ -23,7 +23,8 @@ typedef struct s_lock {
 	pthread_mutex_t lock;
 } t_lock;
 
-t_status 	*new_status(void);
+t_lock 		*new_lock(void);
+t_status 	*new_status(bool initial_status);
 float21 	*new_float21(void);
 float 		float21_to_float(float21 num);
 float21 	*float_to_float21(float num);

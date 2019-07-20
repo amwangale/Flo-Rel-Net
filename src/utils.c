@@ -1,6 +1,15 @@
 #include "../includes/utils.h"
 #include "../includes/florel.h"
 
+t_lock *new_lock(void) {
+	t_lock *lock;
+
+	if (!(lock = (t_lock*)calloc(1, sizeof(t_lock))))
+		return (NULL);
+	pthread_mutex_init(&lock->lock, NULL);
+	return (lock);
+}
+
 float21 *new_float21(void) {
 	float21 *f;
 
@@ -9,11 +18,12 @@ float21 *new_float21(void) {
 	return (f);
 }
 
-t_status *new_status(void) {
+t_status *new_status(bool initial_status) {
 	t_status *status;
 	
 	if (!(status = (t_status*)calloc(1, sizeof(t_status))))
 		return (NULL);
+	status->running = initial_status;
 	return (status);
 }
 
