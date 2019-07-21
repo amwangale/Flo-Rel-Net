@@ -93,7 +93,7 @@ bool initialize_receiver(t_node *node) {
 		if (error)  {
 			printf("Pthread failed to create\n");
 		} else {
-			pthread_join(watcher->thread, (void*)&error);
+			// pthread_join(watcher->thread, (void*)&error);
 		}
 	} else {
 		printf("Failed to create receiver thread\n");
@@ -116,7 +116,7 @@ bool initialize_sender(t_node *node) {
 			printf("Pthread failed to create\n");
 			return (false);
 		} else {
-			pthread_join(watcher->thread, (void*)&error);
+			// pthread_join(watcher->thread, (void*)&error);
 		}
 	} else {
 		printf("Failed to create sender thread\n");
@@ -136,8 +136,11 @@ bool initialize_lora(t_node *node) {
     // See for typedefs, enumerations and there values in LoRa.h header file
     modem.spiCS = 0; // Raspberry SPI CE pin number
     
-    modem.rx.callback = receiving;
+    modem.rx.callback = rx_callback;
     modem.rx.data.buf = buffer;
+
+	modem.tx.callback = tx_callback;
+    modem.tx.data.buf = buffer;
 
     modem.eth.preambleLen = 6;
     modem.eth.bw = BW62_5; //Bandwidth 62.5KHz

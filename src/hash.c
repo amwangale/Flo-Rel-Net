@@ -6,7 +6,9 @@ t_hash *new_hash(int count) {
 	if (!(table = (t_hash*)calloc(1, sizeof(t_hash))))
 		return (NULL);
 	
-	table->lock = *new_lock();
+	if (!(table->lock = new_lock()))
+		return (NULL);
+
 	table->size = count;
 
 	if (!(table->hash_table = (void**)calloc(count, sizeof(void*)))) {
@@ -29,23 +31,24 @@ t_hash *new_hash(int count) {
 
 void *get(t_hash table, unsigned int key) {
 	if (key >= table.size) return (NULL);
-	
+
 	void *value;
 	value = NULL;
 
-	if (!pthread_mutex_trylock(&table.lock.lock)) {
+	if (!pthread_mutex_trylock(&table.lock->lock)) {
 		value = table.hash_table[key];
-		pthread_mutex_unlock(&table.lock.lock);
+		pthread_mutex_unlock(&table.lock->lock);
 	}
+	
 	return (value);
 }
 
 bool set(t_hash table, unsigned int key, void *data) {
 	if (key >= table.size) return (false);
 	
-	if (!pthread_mutex_trylock(&table.lock.lock)) {
+	if (!pthread_mutex_trylock(&table.lock->lock)) {
 		table.hash_table[key] = data;
-		pthread_mutex_unlock(&table.lock.lock);
+		pthread_mutex_unlock(&table.lock->lock);
 		return (true);
 	}
 	

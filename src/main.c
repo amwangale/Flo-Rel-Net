@@ -14,10 +14,11 @@ bool register_node(t_node *node) {
 		node->neighbor_count = 1;
 		node->device_count = 1;
 		
-		node->results_hash = *new_hash(1);
-		node->device_hash = *new_hash(1);
-		node->receive_hash = *new_hash(1);
-		node->neighbor_map = *new_hash(1);
+		node->results_hash = *new_hash(2);
+		node->device_hash = *new_hash(2);
+		node->receive_hash = *new_hash(2);
+		node->neighbor_map = *new_hash(2);
+
 		node->global_results = *new_queue();
 		return (true);
 	}

@@ -51,10 +51,9 @@ float header_to_float(t_header header) {
 	h->value <<= 1;
 	h->value |= header.flags.disconnect;
 	h->value <<= 1;
-	h->value |= header.flags.programmable;
-	h->value <<= 1;
+	h->value |= header.flags.device_id;
+	h->value <<= 7;	
 
-	h->value <<= 10;
 	h->value |= header.id;
 
 	value = float21_to_float(*h);

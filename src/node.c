@@ -6,7 +6,7 @@ t_status *get_status(t_node *node) {
 	t_status *result;
 
 	result = NULL;
-	if (pthread_mutex_trylock(&node->lock.lock)) {
+	if (!pthread_mutex_trylock(&node->lock.lock)) {
 		result = &node->status;
 		pthread_mutex_unlock(&node->lock.lock);
 	}

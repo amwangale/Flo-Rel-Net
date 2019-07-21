@@ -6,7 +6,8 @@ t_lock *new_lock(void) {
 
 	if (!(lock = (t_lock*)calloc(1, sizeof(t_lock))))
 		return (NULL);
-	pthread_mutex_init(&lock->lock, NULL);
+	if (pthread_mutex_init(&lock->lock, NULL))
+		return (NULL);
 	return (lock);
 }
 

@@ -49,7 +49,7 @@ void *sending(void *arg) {
 	t_thread_watcher *watcher;
 
 	watcher = arg;
-	printf("running %d\n", watcher->status.running);
+	printf("running sender %d\n", watcher->status.running);
 	printf("success %d\n", watcher->status.success);
 	printf("failure %d\n", watcher->status.failure);
 	while (watcher->status.running) {

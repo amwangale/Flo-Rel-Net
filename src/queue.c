@@ -21,7 +21,7 @@ bool push_back(t_queue *queue, void *data) {
 	t_item *item;
 
 	if ((item = new_item())) {
-		if (pthread_mutex_trylock(&queue->lock.lock)) {
+		if (!pthread_mutex_trylock(&queue->lock.lock)) {
 			// TODO checks
 			memcpy(&item->data, data, sizeof(t_result));
 			item->next = queue->back;
@@ -40,7 +40,7 @@ t_item *pop_front(t_queue *queue) {
 	t_item *item;
 
 	item = NULL;
-	if (pthread_mutex_trylock(&queue->lock.lock)) {
+	if (!pthread_mutex_trylock(&queue->lock.lock)) {
 		if (!(queue->front || queue->back)) return (NULL);
 		if (queue->front == queue->back) return (NULL);
 

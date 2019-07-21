@@ -4,21 +4,28 @@
 
 t_result *simulate_random_result(t_node *node) {
 	float point;
-	float21 data;
+	float21 *data;
 	t_result *result;
 
 	if (!(result = new_result(node->id)))
 		return (NULL);
 	
 	result->header.flags.transmission = 1;
+	result->header.flags.panic = 0;
+	result->header.flags.failure = 0;
+	result->header.flags.disconnect = 0;
+	result->header.flags.device_id = 1;
 
 	point = 5.0;
 	for (int i = 0; i < MESSAGE_SIZE; i += BIT_WIDTH) {
-		data = *float_to_float21((
+		if ((data = float_to_float21((
 			(float)rand() / (float)(RAND_MAX)
-		) * point);
+		) * point))) {
+			result->message.buffer[BITDEX(i)] = *data;
+		} else {
+			printf("Failed to convert float\n");
+		}
 
-		result->message.buffer[BITDEX(i)] = data;
 	}
 
 	return (result);
@@ -29,14 +36,14 @@ t_result *simulate_receive(t_node *node) {
 
 	result = simulate_random_result(node);
 	printf("Received simulated result\n");
-	
+
 	return (result);
 }
 
 float simulate_collect_data(void) {
 	float data;
 
-	data = (float)rand() / (float)(RAND_MAX);
+	data = ((float)rand() / (float)(RAND_MAX)) * 5.0;
 	printf("Collected simulated data %f\n", data);
 
 	return (data);

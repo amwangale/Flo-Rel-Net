@@ -21,7 +21,7 @@ typedef struct s_flags {
 	unsigned int panic: 1;
 	unsigned int failure: 1;
 	unsigned int disconnect: 1;
-	unsigned int programmable: 1;
+	unsigned int device_id: 7;
 } t_flags;
 
 typedef struct s_header {
