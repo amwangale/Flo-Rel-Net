@@ -26,6 +26,8 @@ typedef struct s_lock {
 t_lock 		*new_lock(void);
 t_status 	*new_status(bool initial_status);
 float21 	*new_float21(void);
+void 		free_float21(float21 *value);
+
 float 		float21_to_float(float21 num);
 float21 	*float_to_float21(float num);
 

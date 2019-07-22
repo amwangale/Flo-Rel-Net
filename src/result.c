@@ -26,6 +26,31 @@ t_message *new_message(void) {
 	return (message);
 }
 
+void free_header(t_header *header) {
+	if (header) {
+		free(&header->flags);
+		free(header);
+	}
+}
+
+void free_message(t_message *message) {
+	if (message) {
+		for (int i = 0; i < MESSAGE_COUNT; i++) {
+			free_float21(&message->buffer[i]);
+		}
+
+		free(message);
+	}
+}
+
+void free_result(t_result *result) {
+	if (result) {
+		free_header(&result->header);
+		free_message(&result->message);
+		free(result);
+	}
+}
+
 t_result *new_result(short id) {
 	t_result *result;
 

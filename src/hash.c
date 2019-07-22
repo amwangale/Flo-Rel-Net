@@ -1,5 +1,16 @@
 #include "../includes/hash.h"
 
+void free_hash(t_hash *table) {
+	if (table) {
+		for (unsigned int i = 0; i < table->size; i++) {
+			if (table->hash_table[i]) {
+				free(table->hash_table[i]);
+			}
+		}
+		free(table);
+	}
+}
+
 t_hash *new_hash(int count) {
 	t_hash *table;
 
@@ -35,7 +46,6 @@ void *get(t_hash table, unsigned int key) {
 	all calling functions should typecast to
 	assign a reliable/known value
 	*/
-	printf("get key = %d table size = %d\n", key, table.size);
 	if (key >= table.size) return (NULL);
 
 	void *value;
@@ -43,7 +53,6 @@ void *get(t_hash table, unsigned int key) {
 
 	if (!pthread_mutex_trylock(&table.lock->lock)) {
 		value = table.hash_table[key];
-		printf("value %d\n", *((int*)value));
 		pthread_mutex_unlock(&table.lock->lock);
 	}
 

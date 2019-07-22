@@ -69,6 +69,8 @@ void *sending(void *arg) {
 				watcher->status.running = false;
 	}
 
+	free_result(result);
+
 	pthread_exit(&watcher->status);
 	return (NULL);
 }

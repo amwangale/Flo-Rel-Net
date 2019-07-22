@@ -11,6 +11,10 @@ t_lock *new_lock(void) {
 	return (lock);
 }
 
+void free_float21(float21 *value) {
+	if (value) free(value);
+}
+
 float21 *new_float21(void) {
 	float21 *f;
 

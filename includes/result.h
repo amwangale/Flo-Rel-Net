@@ -44,8 +44,13 @@ typedef struct s_result {
 
 t_flags 	*new_flags(void);
 t_header 	*new_header(short id);
+
 t_message 	*new_message(void);
+void 		free_message(t_message *message);
+
 t_result 	*new_result(short id);
+void 		free_result(t_result *result);
+
 float 		header_to_float(t_header header);
 
 #endif

@@ -100,15 +100,17 @@ void *receiving(void *arg) {
 		if ((result = simulate_receive(watcher->node))) {
 			if ((header = strip_header(result))) {
 				
-				printf("neighbors exist? %s, %d\n",
-					&watcher->node->neighbor_map? "true":"false",
-					header->id
-				);
+				// printf("neighbors exist? %s, %d\n",
+				// 	&watcher->node->neighbor_map? "true":"false",
+				// 	header->id
+				// );
 
 				index = *((int*)get(watcher->node->neighbor_map, header->id));
 				if ((queue = (t_queue*)get(watcher->node->receive_hash, index))) {
 					if ((message = strip_message(result))) {
-						push_back(queue, message);
+						if (push_back(queue, message) == false) {
+							free_message(message);
+						}
 					} else {
 						printf("Failed to interpret message\n");
 					}
@@ -123,13 +125,17 @@ void *receiving(void *arg) {
 		}
 
 		sleep(1);
+		queue = NULL;
 		result = NULL;
+		message = NULL;
 
 		parent_status = get_status(watcher->node);
 		if (parent_status)
 			if (parent_status->running == false)
 				watcher->status.running = false;
 	}
+
+	if (result) free(result);
 
 	pthread_exit(&watcher->status);
 	return (NULL);

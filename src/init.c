@@ -172,19 +172,19 @@ bool initialize(t_node *node) {
 		LoRa_begin(&node->modem);
 		*/
 
-		// if (initialize_devices(node)) {
-		// 	printf("Devices initialized\n");
+		if (initialize_devices(node)) {
+			printf("Devices initialized\n");
 			
-		// 	if (initialize_sender(node)) {
-		// 		printf("Sender initialized\n");
-		// 	} else {
-		// 		node->status.failure = true;
-		// 		return (false);
-		// 	}
-		// } else {
-		// 	node->status.failure = true;
-		// 	return (false);
-		// }
+			if (initialize_sender(node)) {
+				printf("Sender initialized\n");
+			} else {
+				node->status.failure = true;
+				return (false);
+			}
+		} else {
+			node->status.failure = true;
+			return (false);
+		}
 
 		if (initialize_recieve_buffers(node)) {
 			printf("Receive buffers initialized\n");

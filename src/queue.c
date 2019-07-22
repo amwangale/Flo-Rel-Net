@@ -6,6 +6,11 @@ t_item *new_item(void) {
 
 	if (!(item = (t_item*)calloc(1, sizeof(t_item))))
 		return (NULL);
+	
+	item->next = NULL;
+	item->prev = NULL;
+	item->data = NULL;
+
 	return (item);
 }
 
@@ -24,18 +29,26 @@ bool push_back(t_queue *queue, void *data) {
 
 	don't ask, I don't know why;
 	*/
-	t_item *item;
+	if (queue && data) {
+		t_item *item;
 
-	if ((item = new_item())) {
-		if (!pthread_mutex_trylock(&queue->lock.lock)) {
-			// TODO checks
-			memcpy(&item->data, data, sizeof(t_result));
-			item->next = queue->back;
-			queue->back = item;
-			queue->back->prev = item;
-			pthread_mutex_unlock(&queue->lock.lock);
-			printf("Pushed back data\n");
-			return (true);
+		if ((item = new_item())) {
+			if (!pthread_mutex_trylock(&queue->lock.lock)) {
+				// TODO checks
+				if (!queue->back) {
+					queue->back = item;
+					item->next = queue->front;
+				} else {
+					item->data = data;
+					queue->back->prev = item;
+					item->next = queue->back;
+					queue->back = item;
+				}
+
+				pthread_mutex_unlock(&queue->lock.lock);
+				printf("Pushed back data\n");
+				return (true);
+			}
 		}
 	}
 

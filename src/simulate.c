@@ -52,8 +52,8 @@ bool simulate_transmission(t_result *result) {
 	header = header_to_float(result->header);
 	
 	printf("HEADER || %f\n [\n", header);
-	for (int i = 0; i < MESSAGE_SIZE; i += BIT_WIDTH) {
-		printf("%f ", float21_to_float(result->message.buffer[BITDEX(i)]));
+	for (int i = 0; i < MESSAGE_COUNT; i++) {
+		printf("%f ", float21_to_float(result->message.buffer[i]));
 	}
 	printf("\n]\n");
 

@@ -111,6 +111,64 @@ void *collect_device_data(void *arg) {
 	return (NULL);
 }
 
+// void *send_and_receive(void *arg) {
+// 	t_result *result;
+// 	t_status *parent_status;
+// 	t_thread_watcher *watcher;
+
+// 	watcher = arg;
+
+// 	while (watcher->status.running) {
+// 		if ((result = simulate_receive(watcher->node))) {
+// 			if ((header = strip_header(result))) {
+				
+// 				// printf("neighbors exist? %s, %d\n",
+// 				// 	&watcher->node->neighbor_map? "true":"false",
+// 				// 	header->id
+// 				// );
+
+// 				index = *((int*)get(watcher->node->neighbor_map, header->id));
+// 				if ((queue = (t_queue*)get(watcher->node->receive_hash, index))) {
+// 					if ((message = strip_message(result))) {
+// 						if (push_back(queue, message) == false) {
+// 							free_message(message);
+// 						}
+// 					} else {
+// 						printf("Failed to interpret message\n");
+// 					}
+// 				} else {
+// 					printf("Failed to get queue\n");
+// 				}
+// 			} else {
+// 				printf("Failed to iterpret header\n");
+// 			}
+// 		} else {
+// 			printf("No data received\n");
+// 		}
+
+// 		sleep(1);
+// 		queue = NULL;
+// 		result = NULL;
+// 		message = NULL;
+
+// 		if ((result = fetch_top_result(&watcher->node->global_results))) {
+// 			if (transmit_result(watcher->node, result) == false) {
+// 				printf("Failed to send result\n");
+// 			} else {
+// 				printf("Result sent\n");
+// 			}
+// 		}
+
+// 		parent_status = get_status(watcher->node);
+// 		if (parent_status)
+// 			if (parent_status->running == false)
+// 				watcher->status.running = false;
+// 	}
+
+// 	pthread_exit(&watcher->status);
+// 	return (NULL);
+// }
+
 t_node *run(t_node *node) {
 	printf("Running node\n");
 	while (node->status.running == true) {
