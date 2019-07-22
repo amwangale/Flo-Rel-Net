@@ -24,9 +24,6 @@ t_header *strip_header(t_result *result) {
 		return (NULL);
 
 	header->id = result->header.id;
-	
-	printf("%d\n", header->id);
-	printf("%s\n", &result->header? "true":"false");
 
 	header->flags.transmission = result->header.flags.transmission;
 	header->flags.panic = result->header.flags.panic;
@@ -67,8 +64,7 @@ void rx_callback(rxData *rx) {
 */
 
 void *receiving(void *arg) {
-	int index;
-	int neighbor_id;
+	unsigned int index;
 
 	t_queue *queue;
 	t_header *header;
@@ -78,9 +74,11 @@ void *receiving(void *arg) {
 	t_thread_watcher *watcher;
 
 	watcher = arg;
-	printf("running receiver %d\n", watcher->status.running);
-	printf("success %d\n", watcher->status.success);
-	printf("failure %d\n", watcher->status.failure);
+	
+	// printf("running receiver %d\n", watcher->status.running);
+	// printf("success %d\n", watcher->status.success);
+	// printf("failure %d\n", watcher->status.failure);
+	
 	/*
 	begins a continuous loop of
 	receving transmissions;
@@ -102,20 +100,26 @@ void *receiving(void *arg) {
 		if ((result = simulate_receive(watcher->node))) {
 			if ((header = strip_header(result))) {
 				
-				printf("neighbors exist? %s, %d\n",
-					&watcher->node->neighbor_map? "true":"false",
-					header->id
-				);
+				// printf("neighbors exist? %s, %d\n",
+				// 	&watcher->node->neighbor_map? "true":"false",
+				// 	header->id
+				// );
 
-				if ((index = (int)get(watcher->node->neighbor_map, header->id))) {
-					if ((queue = (t_queue*)get(watcher->node->receive_hash, index))) {
-						if ((message = strip_message(result))) {
-							push_back(queue, message);
-						}
+				index = *((int*)get(watcher->node->neighbor_map, header->id));
+				if ((queue = (t_queue*)get(watcher->node->receive_hash, index))) {
+					if ((message = strip_message(result))) {
+						push_back(queue, message);
+					} else {
+						printf("Failed to interpret message\n");
 					}
+				} else {
+					printf("Failed to get queue\n");
 				}
+			} else {
+				printf("Failed to iterpret header\n");
 			}
 		}
+		sleep(1);
 		result = NULL;
 
 		parent_status = get_status(watcher->node);

@@ -7,8 +7,7 @@ typedef struct s_item {
 	struct s_item *next;
 	struct s_item *prev;
 
-	// make void *
-	t_result data;
+	void *data;
 } t_item;
 
 typedef struct s_queue {

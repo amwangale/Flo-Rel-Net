@@ -25,7 +25,8 @@ bool register_node(t_node *node) {
 }
 
 void *listen_for_data(void *arg) {
-	bool retry;
+	int retry;
+	bool result;
 
 	t_item *data;
 	t_status *parent_status;
@@ -37,7 +38,14 @@ void *listen_for_data(void *arg) {
 		data = pop_front(&watcher->results);
 		if (data) {
 			while (retry > 0) {
-// retry = push_back(&watcher->node->global_results, (void*)data->data);// == false)? 1 : 5;
+				result = push_back(&watcher->node->global_results, data->data);
+				
+				if (result == 0) {
+					retry--;
+				} else {
+					retry = 0;
+				}
+
 				sleep(1);
 			}
 			data = NULL;

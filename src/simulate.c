@@ -33,10 +33,8 @@ t_result *simulate_random_result(t_node *node) {
 
 t_result *simulate_receive(t_node *node) {
 	t_result *result;
-
-	result = simulate_random_result(node);
-	printf("Received simulated result\n");
-
+	if (!(result = simulate_random_result(node)))
+		return (NULL);
 	return (result);
 }
 

@@ -79,7 +79,7 @@ bool initialize_receiver(t_node *node) {
 
 		for (unsigned int i = 0; i < node->neighbor_count; i++) {
 			if (!get(node->neighbor_map, i)) {
-				if (!set(node->neighbor_map, i, &i)) {
+				if (!set(node->neighbor_map, i, (void*)&i)) {
 					printf("Failed to create device queue %i\n", i);
 				}
 			}

@@ -18,6 +18,12 @@ t_queue *new_queue(void) {
 }
 
 bool push_back(t_queue *queue, void *data) {
+	/*
+	cannot call this function with non-void *
+	data;
+
+	don't ask, I don't know why;
+	*/
 	t_item *item;
 
 	if ((item = new_item())) {
@@ -30,7 +36,6 @@ bool push_back(t_queue *queue, void *data) {
 			pthread_mutex_unlock(&queue->lock.lock);
 			return (true);
 		}
-
 	}
 
 	return (false);
