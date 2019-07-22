@@ -34,6 +34,7 @@ bool push_back(t_queue *queue, void *data) {
 			queue->back = item;
 			queue->back->prev = item;
 			pthread_mutex_unlock(&queue->lock.lock);
+			printf("Pushed back data\n");
 			return (true);
 		}
 	}

@@ -17,15 +17,14 @@ t_result *simulate_random_result(t_node *node) {
 	result->header.flags.device_id = 1;
 
 	point = 5.0;
-	for (int i = 0; i < MESSAGE_SIZE; i += BIT_WIDTH) {
+	for (int i = 0; i < MESSAGE_COUNT; i++) {
 		if ((data = float_to_float21((
 			(float)rand() / (float)(RAND_MAX)
 		) * point))) {
-			result->message.buffer[BITDEX(i)] = *data;
+			result->message.buffer[i] = *data;
 		} else {
 			printf("Failed to convert float\n");
 		}
-
 	}
 
 	return (result);

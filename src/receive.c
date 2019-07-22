@@ -6,7 +6,7 @@ t_message *strip_message(t_result *result) {
 	t_message *message;
 
 	message = new_message();
-	for (int i = 0; i < MESSAGE_SIZE; i += BIT_WIDTH) {
+	for (int i = 0; i < MESSAGE_COUNT; i++) {
 		memcpy(
 			&message->buffer[i],
 			&result->message.buffer[i],
@@ -66,9 +66,9 @@ void rx_callback(rxData *rx) {
 void *receiving(void *arg) {
 	unsigned int index;
 
-	t_queue *queue;
 	t_header *header;
 	t_result *result;
+	t_queue *queue;
 	t_message *message;
 	t_status *parent_status;
 	t_thread_watcher *watcher;
@@ -100,10 +100,10 @@ void *receiving(void *arg) {
 		if ((result = simulate_receive(watcher->node))) {
 			if ((header = strip_header(result))) {
 				
-				// printf("neighbors exist? %s, %d\n",
-				// 	&watcher->node->neighbor_map? "true":"false",
-				// 	header->id
-				// );
+				printf("neighbors exist? %s, %d\n",
+					&watcher->node->neighbor_map? "true":"false",
+					header->id
+				);
 
 				index = *((int*)get(watcher->node->neighbor_map, header->id));
 				if ((queue = (t_queue*)get(watcher->node->receive_hash, index))) {
@@ -118,7 +118,10 @@ void *receiving(void *arg) {
 			} else {
 				printf("Failed to iterpret header\n");
 			}
+		} else {
+			printf("No data received\n");
 		}
+
 		sleep(1);
 		result = NULL;
 

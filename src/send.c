@@ -55,10 +55,13 @@ void *sending(void *arg) {
 	// printf("failure %d\n", watcher->status.failure);
 
 	while (watcher->status.running) {
-		if ((result = fetch_top_result(&watcher->node->global_results)))
-			if (transmit_result(watcher->node, result) == false)
+		if ((result = fetch_top_result(&watcher->node->global_results))) {
+			if (transmit_result(watcher->node, result) == false) {
 				printf("Failed to send result\n");
-		result = NULL;
+			} else {
+				printf("Result sent\n");
+			}
+		}
 
 		parent_status = get_status(watcher->node);
 		if (parent_status)

@@ -16,6 +16,10 @@
 	#define PACKET_SIZE HEADER_SIZE + MESSAGE_SIZE
 #endif
 
+#ifndef MESSAGE_COUNT
+	#define MESSAGE_COUNT MESSAGE_SIZE / BIT_WIDTH
+#endif
+
 typedef struct s_flags {
 	unsigned int transmission: 1;
 	unsigned int panic: 1;
@@ -30,7 +34,7 @@ typedef struct s_header {
 } t_header;
 
 typedef struct s_message {
-	float21 buffer[MESSAGE_SIZE / BIT_WIDTH];
+	float21 buffer[MESSAGE_COUNT];
 } t_message;
 
 typedef struct s_result {
