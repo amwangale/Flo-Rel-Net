@@ -37,6 +37,7 @@ t_status *new_status(bool initial_status) {
 }
 
 float float21_to_float(float21 num) {
+	float sign;
 	float value;
 	float mantissa;
 	float fraction;
@@ -48,10 +49,18 @@ float float21_to_float(float21 num) {
 
 	mantissa = (float)(num.value >> 10);
 
-	value = mantissa
-		+ fraction
-		* (num.sign & 1)? 1.0 : -1.0;
 
+	sign = (num.sign & 1)? 1.0 : -1.0;
+
+	value = (mantissa
+		+ fraction)
+		* sign;
+
+	printf(
+		"ALL VALUES %f, %f, %f",
+		value, mantissa, fraction
+	);
+	
 	return (value);
 }
 
@@ -68,9 +77,7 @@ float21 *float_to_float21(float num) {
 	f->value |= (int)integral;
 	f->value <<= 10; // half-size
 
-	while (fraction > 0x3FF) {
-		fraction /= 10;
-	}
+	fraction *= 10;
 
 	f->value |= (int)fraction;
 

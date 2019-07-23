@@ -47,13 +47,18 @@ float simulate_collect_data(void) {
 }
 
 bool simulate_transmission(t_result *result) {
-	float header;
+	unsigned int header;
 
-	header = header_to_float(result->header);
+	header = (unsigned int)header_to_float(result->header);
 	
-	printf("HEADER || %f\n [\n", header);
+	printf("HEADER || ");
+	for (int i = 0; i < BIT_WIDTH; i++) {
+		printf("%i", (header & 0x1)? 1: 0);
+		header >>= 1;
+	}
+	printf("\n [\n ");
 	for (int i = 0; i < MESSAGE_COUNT; i++) {
-		printf("%f ", float21_to_float(result->message.buffer[i]));
+		// printf("%f ", float21_to_float(result->message.buffer[i]));
 	}
 	printf("\n]\n");
 

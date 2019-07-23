@@ -89,10 +89,8 @@ float header_to_float(t_header header) {
 
 bool set_header(t_result *result) {
 	if (result) {
-		if (&result->header) {
-			result->header.flags.transmission = 1;
-			return (true);
-		}
+		result->header.flags.transmission = 1;
+		return (true);
 	}
 	return (false);
 }

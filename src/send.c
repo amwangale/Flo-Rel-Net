@@ -37,8 +37,15 @@ t_result *fetch_top_result(t_queue *global_results) {
 	t_result *result;
 
 	result = new_result(0);
-	if ((item = pop_front(global_results)))
-		result = memcpy(result, &item->data, sizeof(float) * PACKET_SIZE);
+	if ((item = pop_front(global_results))) {
+		memcpy(&result->header, &item->data, sizeof(t_header));
+		for (int i = 0; i < PACKET_COUNT; i++) {
+			memcpy(
+				&result->message.buffer[i],
+				&item->data, sizeof(float21)
+			);
+		}
+	}
 
 	return (result);
 }

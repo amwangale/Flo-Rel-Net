@@ -16,8 +16,16 @@
 	#define PACKET_SIZE HEADER_SIZE + MESSAGE_SIZE
 #endif
 
+#ifndef HEADER_COUNT
+	#define HEADER_COUNT HEADER_SIZE / BIT_WIDTH
+#endif
+
 #ifndef MESSAGE_COUNT
 	#define MESSAGE_COUNT MESSAGE_SIZE / BIT_WIDTH
+#endif
+
+#ifndef PACKET_COUNT
+	#define PACKET_COUNT MESSAGE_COUNT + HEADER_COUNT
 #endif
 
 typedef struct s_flags {
