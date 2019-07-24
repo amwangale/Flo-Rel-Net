@@ -37,7 +37,7 @@ void *listen_for_data(void *arg) {
 	watcher = arg;
 	while (watcher->status.running) {
 		retry = 5;
-		data = pop_front(&watcher->results);
+		data = pop_front(watcher->results);
 		if (data) {
 			while (retry > 0) {
 				result = push_back(&watcher->node->global_results, data->data);
@@ -82,12 +82,12 @@ void *collect_device_data(void *arg) {
 	while (watcher->status.running) {
 		size = 0;
 		retry = 5;
-		while (size < MESSAGE_SIZE && retry) {
+		while (size < MESSAGE_COUNT && retry) {
 			// receive bound to device
 			if ((data = simulate_collect_data())) {
 				f = float_to_float21((float)data);
-				result->message.buffer[BITDEX(size)] = *f;
-				size += BIT_WIDTH;
+				result->message.buffer[size] = *f;
+				size++;
 			} else {
 				retry--;
 			}
@@ -129,15 +129,19 @@ void *send_and_receive(void *arg) {
 		if ((result = simulate_receive(watcher->node))) {
 			if ((header = strip_header(result))) {
 				
-				// printf("neighbors exist? %s, %d\n",
-				// 	&watcher->node->neighbor_map? "true":"false",
-				// 	header->id
-				// );
+				printf("neighbors exist? %s, %d\n",
+					&watcher->node->neighbor_map? "true":"false",
+					header->id
+				);
+
+				// for (int i = 0; i < MESSAGE_COUNT; i++) {printf(" %f", float21_to_float(result->message.buffer[i]));}
 
 				index = *((int*)get(watcher->node->neighbor_map, header->id));
+				printf("INDEX %i\n", index);
+
 				if ((queue = (t_queue*)get(watcher->node->receive_hash, index))) {
 					if ((message = strip_message(result))) {
-						if (push_back(queue, message) == false) {
+						if (push_back(queue, result) == false) {
 							free_message(message);
 						}
 					} else {

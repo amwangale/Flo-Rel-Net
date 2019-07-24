@@ -8,7 +8,7 @@
 typedef struct s_thread_watcher {
 	pthread_t thread;
 	t_status status;
-	t_queue results;
+	t_queue *results;
 
 	// parent
 	t_node *node;

@@ -7,7 +7,8 @@ t_result *simulate_random_result(t_node *node) {
 	float21 *data;
 	t_result *result;
 
-	if (!(result = new_result(node->id)))
+	printf("THE FUK %d\n", node->id);
+	if (!(result = new_result(rand() % node->neighbor_count)))
 		return (NULL);
 	
 	result->header.flags.transmission = 1;
@@ -57,9 +58,7 @@ bool simulate_transmission(t_result *result) {
 		header >>= 1;
 	}
 	printf(" [\n");
-	for (int i = 0; i < MESSAGE_COUNT; i++) {
-		// printf(" %f", float21_to_float(result->message.buffer[i]));
-	}
+	for (int i = 0; i < MESSAGE_COUNT; i++) {printf(" %f", float21_to_float(result->message.buffer[i]));}
 	printf("\n]\n");
 
 	return (true);

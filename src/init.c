@@ -7,28 +7,27 @@
 
 bool initialize_recieve_buffers(t_node *node) {
 	int error;
-	t_queue *queue;
 	t_thread_watcher *watcher;
 	
 	if ((watcher = new_thread_watcher(node))) {
-		new_hash(&node->results_hash, node->neighbor_count);
-
+		// new_hash(&node->receive_hash, node->neighbor_count);
 		for (unsigned int i = 0; i < node->neighbor_count; i++) {
 			// checking if index exists
 			if (!get(node->receive_hash, i)) {
-				if ((queue = new_queue())) {
-					if (!set(node->results_hash, i, queue)) {
-						printf("Failed to create results queue\n");
+				if (!set(
+					&node->receive_hash, i,
+					watcher->results, sizeof(watcher->results)
+				)) {
+					printf("Failed to create results queue\n");
+				} else {
+					error = pthread_create(
+						&watcher->thread, NULL,
+						listen_for_data, watcher
+					);
+					if (error)  {
+						printf("Pthread failed to create\n");
 					} else {
-						error = pthread_create(
-							&watcher->thread, NULL,
-							listen_for_data, watcher
-						);
-						if (error)  {
-							printf("Pthread failed to create\n");
-						} else {
-							pthread_join(watcher->thread, (void*)&error);
-						}
+						pthread_join(watcher->thread, (void*)&error);
 					}
 				}
 			}
@@ -40,7 +39,6 @@ bool initialize_recieve_buffers(t_node *node) {
 
 bool initialize_devices(t_node *node) {
 	int error;
-	t_queue *queue;
 	t_thread_watcher *watcher;
 
 	if ((watcher = new_thread_watcher(node))) {
@@ -48,20 +46,18 @@ bool initialize_devices(t_node *node) {
 
 		for (unsigned int i = 0; i < node->device_count; i++) {
 			if (!get(node->device_hash, i)) {
-				if ((queue = new_queue())) {
-					if (!set(node->device_hash, i, queue)) {
-						printf("Failed to create device queue %i\n", i);
+				if (!set(&node->device_hash, i, watcher->results, sizeof(watcher->results))) {
+					printf("Failed to create device queue %i\n", i);
+				} else {
+					error = pthread_create(
+						&watcher->thread, NULL,
+						collect_device_data, watcher
+					);
+					if (error)  {
+						printf("Pthread failed to create\n");
 					} else {
-						error = pthread_create(
-							&watcher->thread, NULL,
-							&collect_device_data, watcher
-						);
-						if (error)  {
-							printf("Pthread failed to create\n");
-						} else {
-							pthread_join(watcher->thread, (void*)&error);
-						}	
-					}
+						pthread_join(watcher->thread, (void*)&error);
+					}	
 				}
 			}
 		}
@@ -79,7 +75,7 @@ bool initialize_receiver(t_node *node) {
 
 		for (unsigned int i = 0; i < node->neighbor_count; i++) {
 			if (!get(node->neighbor_map, i)) {
-				if (!set(node->neighbor_map, i, (void*)&i)) {
+				if (!set(&node->neighbor_map, i, &i, sizeof(i))) {
 					printf("Failed to create device queue %i\n", i);
 				}
 			}
@@ -132,18 +128,18 @@ bool initialize_send_receive(t_node *node) {
 
 	if ((watcher = new_thread_watcher(node))) {
 		new_hash(&node->neighbor_map, node->neighbor_count);
-
+		
 		for (unsigned int i = 0; i < node->neighbor_count; i++) {
-			if (!get(node->neighbor_map, i)) {
-				if (!set(&node->neighbor_map, i, (void*)&i)) {
+			// if (!get(node->neighbor_map, i)) {
+				if (!set(&node->neighbor_map, i, &i, sizeof(i))) {
 					printf("Failed to create device queue %i\n", i);
 				}
-			}
+			// }
 		}
 
 		error = pthread_create(
 			&watcher->thread, NULL,
-			&send_and_receive, watcher
+			send_and_receive, watcher
 		);
 		if (error)  {
 			printf("Pthread failed to create\n");

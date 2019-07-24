@@ -36,7 +36,7 @@ void *get(t_hash table, unsigned int key) {
 	all calling functions should typecast to
 	assign a reliable/known value
 	*/
-	if (key >= table.size) return (NULL);
+	if (key > table.size) return (NULL);
 
 	void *value;
 	value = NULL;
@@ -49,12 +49,12 @@ void *get(t_hash table, unsigned int key) {
 	return (value);
 }
 
-bool set(t_hash *table, unsigned int key, void *data) {
-	if (key >= table.size) return (false);
+bool set(t_hash *table, unsigned int key, void *data, size_t size) {
+	if (key > table->size) return (false);
 	
-	if (!pthread_mutex_trylock(&table.lock->lock)) {
-		table.table[key] = data;
-		pthread_mutex_unlock(&table.lock->lock);
+	if (!pthread_mutex_trylock(&table->lock->lock)) {
+		memcpy(table->table[key], data, size);
+		pthread_mutex_unlock(&table->lock->lock);
 		return (true);
 	}
 	
