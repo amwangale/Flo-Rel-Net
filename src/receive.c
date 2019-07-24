@@ -108,7 +108,7 @@ void *receiving(void *arg) {
 				index = *((int*)get(watcher->node->neighbor_map, header->id));
 				if ((queue = (t_queue*)get(watcher->node->receive_hash, index))) {
 					if ((message = strip_message(result))) {
-						if (push_back(queue, message) == false) {
+						if (push_back(queue, result, sizeof(t_result)) == false) {
 							free_message(message);
 						}
 					} else {

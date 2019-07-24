@@ -1,16 +1,21 @@
 #include "../includes/florel.h"
 #include "../includes/queue.h"
 
-t_item *new_item(void) {
-	t_item *item;
+t_item *new_item(void *data, size_t size) {
+	if (!data || !size) return (false);
 
+	t_item *item;
 	if (!(item = (t_item*)calloc(1, sizeof(t_item))))
 		return (NULL);
 	
 	item->next = NULL;
 	item->prev = NULL;
-	item->data = NULL;
 
+	printf("%p %ld\n", data, size);
+	sleep(1);
+	printf("\n");
+	memcpy(&item->data, &data, size);
+	printf("\n");
 	return (item);
 }
 
@@ -22,27 +27,30 @@ t_queue *new_queue(void) {
 	return (queue);
 }
 
-bool push_back(t_queue *queue, void *data) {
+bool push_back(t_queue *queue, void *data, size_t size) {
 	/*
 	cannot call this function with non-void *
 	data;
 
 	don't ask, I don't know why;
 	*/
-	if (queue && data) {
+	if (queue && data && size) {
 		t_item *item;
 
-		if ((item = new_item())) {
+		if ((item = new_item(data, size))) {
 			if (!pthread_mutex_trylock(&queue->lock.lock)) {
 				// TODO checks
 				if (!queue->front) {
+					printf("NO Q F\n");
 					queue->front = item;
 					item->prev = queue->back;
 				} else if (!queue->back) {
+					printf("NO Q B\n");
 					queue->back = item;
 					item->next = queue->front;
+					queue->front->prev = item;
 				} else {
-					item->data = data;
+					printf("BOTH Q\n");
 					queue->back->prev = item;
 					item->next = queue->back;
 					queue->back = item;

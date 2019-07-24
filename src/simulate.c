@@ -58,7 +58,7 @@ bool simulate_transmission(t_result *result) {
 		header >>= 1;
 	}
 	printf(" [\n");
-	for (int i = 0; i < MESSAGE_COUNT; i++) {printf(" %f", float21_to_float(result->message.buffer[i]));}
+	// for (int i = 0; i < MESSAGE_COUNT; i++) {printf(" %f", float21_to_float(result->message.buffer[i]));}
 	printf("\n]\n");
 
 	return (true);

@@ -40,7 +40,10 @@ void *listen_for_data(void *arg) {
 		data = pop_front(watcher->results);
 		if (data) {
 			while (retry > 0) {
-				result = push_back(&watcher->node->global_results, data->data);
+				result = push_back(
+					&watcher->node->global_results,
+					data->data, sizeof(t_result)
+				);
 				
 				if (result == 0) {
 					retry--;
@@ -96,7 +99,8 @@ void *collect_device_data(void *arg) {
 		if (size >= MESSAGE_SIZE) {
 			retry = 5;
 			while (!push_back(
-				&watcher->node->global_results, result
+				&watcher->node->global_results,
+				result, sizeof(t_result)
 			) && retry--) {
 				sleep(1);
 			}
@@ -141,8 +145,8 @@ void *send_and_receive(void *arg) {
 
 				if ((queue = (t_queue*)get(watcher->node->receive_hash, index))) {
 					if ((message = strip_message(result))) {
-						if (push_back(queue, result) == false) {
-							free_message(message);
+						if (push_back(queue, result, sizeof(t_result)) == false) {
+							printf("Failed to push back\n");
 						}
 					} else {
 						printf("Failed to interpret message\n");

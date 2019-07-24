@@ -13,7 +13,7 @@ bool initialize_recieve_buffers(t_node *node) {
 		// new_hash(&node->receive_hash, node->neighbor_count);
 		for (unsigned int i = 0; i < node->neighbor_count; i++) {
 			// checking if index exists
-			if (!get(node->receive_hash, i)) {
+			// if (!get(node->receive_hash, i)) {
 				if (!set(
 					&node->receive_hash, i,
 					watcher->results, sizeof(watcher->results)
@@ -26,11 +26,9 @@ bool initialize_recieve_buffers(t_node *node) {
 					);
 					if (error)  {
 						printf("Pthread failed to create\n");
-					} else {
-						pthread_join(watcher->thread, (void*)&error);
 					}
 				}
-			}
+			// }
 		}
 	}
 
@@ -128,7 +126,7 @@ bool initialize_send_receive(t_node *node) {
 
 	if ((watcher = new_thread_watcher(node))) {
 		new_hash(&node->neighbor_map, node->neighbor_count);
-		
+
 		for (unsigned int i = 0; i < node->neighbor_count; i++) {
 			// if (!get(node->neighbor_map, i)) {
 				if (!set(&node->neighbor_map, i, &i, sizeof(i))) {
