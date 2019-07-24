@@ -35,7 +35,10 @@ bool push_back(t_queue *queue, void *data) {
 		if ((item = new_item())) {
 			if (!pthread_mutex_trylock(&queue->lock.lock)) {
 				// TODO checks
-				if (!queue->back) {
+				if (!queue->front) {
+					queue->front = item;
+					item->prev = queue->back;
+				} else if (!queue->back) {
 					queue->back = item;
 					item->next = queue->front;
 				} else {
@@ -59,19 +62,21 @@ t_item *pop_front(t_queue *queue) {
 	t_item *item;
 
 	item = NULL;
-	if (!pthread_mutex_trylock(&queue->lock.lock)) {
-		if (!(queue->front || queue->back)) return (NULL);
-		if (queue->front == queue->back) return (NULL);
+	if (queue) {
+		if (!pthread_mutex_trylock(&queue->lock.lock)) {
+			if (!(queue->front || queue->back)) return (NULL);
+			if (queue->front == queue->back) return (NULL);
 
-		item = queue->front;
-		queue->front = queue->front->prev;
-		queue->front->next = NULL;
-		item->next = NULL;
-		item->prev = NULL;
+			item = queue->front;
+			queue->front = queue->front->prev;
+			queue->front->next = NULL;
+			item->next = NULL;
+			item->prev = NULL;
 
-		pthread_mutex_unlock(&queue->lock.lock);
-		return (item);
+			pthread_mutex_unlock(&queue->lock.lock);
+			return (item);
+		}
 	}
 
-	return (NULL);
+	return (item);
 }

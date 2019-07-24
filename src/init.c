@@ -11,7 +11,7 @@ bool initialize_recieve_buffers(t_node *node) {
 	t_thread_watcher *watcher;
 	
 	if ((watcher = new_thread_watcher(node))) {
-		node->results_hash = *new_hash(node->neighbor_count);
+		new_hash(&node->results_hash, node->neighbor_count);
 
 		for (unsigned int i = 0; i < node->neighbor_count; i++) {
 			// checking if index exists
@@ -44,7 +44,7 @@ bool initialize_devices(t_node *node) {
 	t_thread_watcher *watcher;
 
 	if ((watcher = new_thread_watcher(node))) {
-		node->device_hash = *new_hash(node->device_count);
+		new_hash(&node->device_hash, node->device_count);
 
 		for (unsigned int i = 0; i < node->device_count; i++) {
 			if (!get(node->device_hash, i)) {
@@ -75,7 +75,7 @@ bool initialize_receiver(t_node *node) {
 	t_thread_watcher *watcher;
 
 	if ((watcher = new_thread_watcher(node))) {
-		node->neighbor_map = *new_hash(node->neighbor_count);
+		new_hash(&node->neighbor_map, node->neighbor_count);
 
 		for (unsigned int i = 0; i < node->neighbor_count; i++) {
 			if (!get(node->neighbor_map, i)) {
@@ -111,6 +111,39 @@ bool initialize_sender(t_node *node) {
 		error = pthread_create(
 			&watcher->thread, NULL,
 			&sending, watcher
+		);
+		if (error)  {
+			printf("Pthread failed to create\n");
+			return (false);
+		} else {
+			// pthread_join(watcher->thread, (void*)&error);
+		}
+	} else {
+		printf("Failed to create sender thread\n");
+		return (false);
+	}
+
+	return (true);
+}
+
+bool initialize_send_receive(t_node *node) {
+	int error;
+	t_thread_watcher *watcher;
+
+	if ((watcher = new_thread_watcher(node))) {
+		new_hash(&node->neighbor_map, node->neighbor_count);
+
+		for (unsigned int i = 0; i < node->neighbor_count; i++) {
+			if (!get(node->neighbor_map, i)) {
+				if (!set(&node->neighbor_map, i, (void*)&i)) {
+					printf("Failed to create device queue %i\n", i);
+				}
+			}
+		}
+
+		error = pthread_create(
+			&watcher->thread, NULL,
+			&send_and_receive, watcher
 		);
 		if (error)  {
 			printf("Pthread failed to create\n");
@@ -174,13 +207,14 @@ bool initialize(t_node *node) {
 
 		if (initialize_devices(node)) {
 			printf("Devices initialized\n");
-			
+			/*			
 			if (initialize_sender(node)) {
 				printf("Sender initialized\n");
 			} else {
 				node->status.failure = true;
 				return (false);
 			}
+			*/
 		} else {
 			node->status.failure = true;
 			return (false);
@@ -188,13 +222,21 @@ bool initialize(t_node *node) {
 
 		if (initialize_recieve_buffers(node)) {
 			printf("Receive buffers initialized\n");
-
+			/*
 			if (initialize_receiver(node)) {
 				printf("Receiver initialized\n");
 			} else {
 				node->status.failure = true;
 				return (false);
 			}
+			*/
+		} else {
+			node->status.failure = true;
+			return (false);
+		}
+
+		if (initialize_send_receive(node)) {
+			printf("Send/Receive initialized\n");
 		} else {
 			node->status.failure = true;
 			return (false);

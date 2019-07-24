@@ -21,4 +21,6 @@
 	#define BITDEX(i) i / BIT_WIDTH
 #endif
 
+void *send_and_receive(void *arg);
+
 #endif

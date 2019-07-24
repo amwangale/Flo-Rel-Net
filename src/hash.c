@@ -3,41 +3,31 @@
 void free_hash(t_hash *table) {
 	if (table) {
 		for (unsigned int i = 0; i < table->size; i++) {
-			if (table->hash_table[i]) {
-				free(table->hash_table[i]);
+			if (table->table[i]) {
+				free(table->table[i]);
 			}
 		}
 		free(table);
 	}
 }
 
-t_hash *new_hash(int count) {
-	t_hash *table;
+void new_hash(t_hash *hash, unsigned int count) {
+	if ((hash->lock = new_lock())) {
+		hash->size = count + 1;
 
-	if (!(table = (t_hash*)calloc(1, sizeof(t_hash))))
-		return (NULL);
-	
-	if (!(table->lock = new_lock()))
-		return (NULL);
-
-	table->size = count + 1;
-
-	if (!(table->hash_table = (void**)calloc(table->size, sizeof(void*)))) {
-		free(&table->lock);
-		free(table);
-		return (NULL);
-	} else {
-		for (unsigned int i = 0; i < table->size; i++) {
-			if (!(table->hash_table[i] = (void*)calloc(1, sizeof(t_value)))) {
-				free(&table->hash_table); // free all?
-				free(&table->lock);
-				free(table);
-				return (NULL);
+		if (!(hash->table = (void**)calloc(hash->size, sizeof(void*)))) {
+			free(&hash->lock);
+			free(hash);
+		} else {
+			for (unsigned int i = 0; i < hash->size; i++) {
+				if (!(hash->table[i] = (void*)calloc(1, sizeof(t_value)))) {
+					free(&hash->table); // free all?
+					free(&hash->lock);
+					free(hash);
+				}
 			}
 		}
 	}
-
-	return (table);
 }
 
 void *get(t_hash table, unsigned int key) {
@@ -52,18 +42,18 @@ void *get(t_hash table, unsigned int key) {
 	value = NULL;
 
 	if (!pthread_mutex_trylock(&table.lock->lock)) {
-		value = table.hash_table[key];
+		value = table.table[key];
 		pthread_mutex_unlock(&table.lock->lock);
 	}
 
 	return (value);
 }
 
-bool set(t_hash table, unsigned int key, void *data) {
+bool set(t_hash *table, unsigned int key, void *data) {
 	if (key >= table.size) return (false);
 	
 	if (!pthread_mutex_trylock(&table.lock->lock)) {
-		table.hash_table[key] = data;
+		table.table[key] = data;
 		pthread_mutex_unlock(&table.lock->lock);
 		return (true);
 	}

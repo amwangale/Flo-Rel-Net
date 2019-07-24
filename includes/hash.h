@@ -14,7 +14,7 @@ typedef struct s_value {
 } t_value;
 
 typedef struct s_hash {
-	void **hash_table;
+	void **table;
 	unsigned int size;
 
 	t_lock *lock;
@@ -22,6 +22,6 @@ typedef struct s_hash {
 
 void 	*get(t_hash table, unsigned int key);
 bool 	set(t_hash table, unsigned int key, void *data);
-t_hash 	*new_hash(int count);
+void 	new_hash(t_hash *hash, unsigned int count);
 
 #endif

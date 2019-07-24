@@ -3,6 +3,7 @@
 #include "../includes/send.h"
 #include "../includes/simulate.h"
 #include "../includes/init.h"
+#include "../includes/receive.h"
 
 bool register_node(t_node *node) {
 	// YODO broadcast to other nodes
@@ -11,13 +12,14 @@ bool register_node(t_node *node) {
 		return (false);
 	} else {
 		printf("Node exists\n");
-		node->neighbor_count = 1;
-		node->device_count = 1;
+		node->neighbor_count = 5;
+		node->device_count = 3;
 		
-		node->results_hash = *new_hash(2);
-		node->device_hash = *new_hash(2);
-		node->receive_hash = *new_hash(2);
-		node->neighbor_map = *new_hash(2);
+		printf("segf %i\n", node->device_hash.size);
+		new_hash(&node->device_hash, node->device_count);
+		new_hash(&node->results_hash, node->neighbor_count);
+		new_hash(&node->receive_hash, node->neighbor_count);
+		new_hash(&node->neighbor_map, node->neighbor_count);
 
 		node->global_results = *new_queue();
 		return (true);
@@ -111,63 +113,65 @@ void *collect_device_data(void *arg) {
 	return (NULL);
 }
 
-// void *send_and_receive(void *arg) {
-// 	t_result *result;
-// 	t_status *parent_status;
-// 	t_thread_watcher *watcher;
+void *send_and_receive(void *arg) {
+	unsigned int index;
 
-// 	watcher = arg;
+	t_result *result;
+	t_status *parent_status;
+	t_thread_watcher *watcher;
 
-// 	while (watcher->status.running) {
-// 		if ((result = simulate_receive(watcher->node))) {
-// 			if ((header = strip_header(result))) {
+	t_header *header;
+	t_queue *queue;
+	t_message *message;
+
+	watcher = arg;
+	while (watcher->status.running) {
+		if ((result = simulate_receive(watcher->node))) {
+			if ((header = strip_header(result))) {
 				
-// 				// printf("neighbors exist? %s, %d\n",
-// 				// 	&watcher->node->neighbor_map? "true":"false",
-// 				// 	header->id
-// 				// );
+				// printf("neighbors exist? %s, %d\n",
+				// 	&watcher->node->neighbor_map? "true":"false",
+				// 	header->id
+				// );
 
-// 				index = *((int*)get(watcher->node->neighbor_map, header->id));
-// 				if ((queue = (t_queue*)get(watcher->node->receive_hash, index))) {
-// 					if ((message = strip_message(result))) {
-// 						if (push_back(queue, message) == false) {
-// 							free_message(message);
-// 						}
-// 					} else {
-// 						printf("Failed to interpret message\n");
-// 					}
-// 				} else {
-// 					printf("Failed to get queue\n");
-// 				}
-// 			} else {
-// 				printf("Failed to iterpret header\n");
-// 			}
-// 		} else {
-// 			printf("No data received\n");
-// 		}
+				index = *((int*)get(watcher->node->neighbor_map, header->id));
+				if ((queue = (t_queue*)get(watcher->node->receive_hash, index))) {
+					if ((message = strip_message(result))) {
+						if (push_back(queue, message) == false) {
+							free_message(message);
+						}
+					} else {
+						printf("Failed to interpret message\n");
+					}
+				} else {
+					printf("Failed to get queue\n");
+				}
+			} else {
+				printf("Failed to iterpret header\n");
+			}
+		} else {
+			printf("No data received\n");
+		}
 
-// 		sleep(1);
-// 		queue = NULL;
-// 		result = NULL;
-// 		message = NULL;
+		sleep(1);
 
-// 		if ((result = fetch_top_result(&watcher->node->global_results))) {
-// 			if (transmit_result(watcher->node, result) == false) {
-// 				printf("Failed to send result\n");
-// 			} else {
-// 				printf("Result sent\n");
-// 			}
-// 		}
+		if ((result = fetch_top_result(&watcher->node->global_results))) {
+			if (transmit_result(watcher->node, result) == false) {
+				printf("Failed to send result\n");
+			} else {
+				printf("Result sent\n");
+			}
+		}
 
-// 		parent_status = get_status(watcher->node);
-// 		if (parent_status)
-// 			if (parent_status->running == false)
-// 				watcher->status.running = false;
-// 	}
+		parent_status = get_status(watcher->node);
+		if (parent_status)
+			if (parent_status->running == false)
+				watcher->status.running = false;
+	}
 
-// 	pthread_exit(&watcher->status);
-// 	return (NULL);
-// }
+	pthread_exit(&watcher->status);
+	return (NULL);
+}
 
 t_node *run(t_node *node) {
 	printf("Running node\n");
