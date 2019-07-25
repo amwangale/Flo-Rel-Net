@@ -58,12 +58,14 @@ def send_and_receive(watcher):
 				index = watcher.node.neighbor_map.get(header['id'])
 				thread = watcher.node.receive_hash.get(index)
 				if thread:
+					print("Received data")
 					thread.results.put(result)
 
 		time.sleep(1)
 
 		result = watcher.node.fetch_top_result()
 		if result:
+			print("Sending data")
 			transmit_result(result)
 
 		watcher.check_status()

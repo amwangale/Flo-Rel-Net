@@ -26,7 +26,8 @@ def receive(node):
 	return random_result(node)
 
 def transmission(result):
-	print("\nHEADER ||", result.header)
+	print("\nHEADER || [", result.header)
 	for i in range(MESSAGE_COUNT):
-		print(result.message[i], end="")
+		print(" ", result.message[i], end="")
+	print("\n]")
 	return True
