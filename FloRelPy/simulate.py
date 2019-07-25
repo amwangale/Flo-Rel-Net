@@ -1,27 +1,32 @@
-simulate_random_result(node):
+import node
+import random
+from result import Result, MESSAGE_COUNT
+
+def collect_data():
+	return random.uniform(1.0, 10.0)
+
+def random_result(node):
 	result = Result(header={
+		'id':random.randint(0, node.neighbor_count),
 		'flags':{
 			'transmission':1,
 			'panic':0,
 			'failure':0,
 			'disconnect':0,
-			'device_id':node.id
+			'device_id':random.randint(0, node.device_count)
 		}
 	})
 
 	for i in range(len(result.message)):
-		result.message[i] = simulate_collect_data()
+		result.message[i] = collect_data()
 
-	return result
+	return result or None
 
-simulate_receive(ndoe):
-	return simulate_random_result(node)
+def receive(node):
+	return random_result(node)
 
-simulate_collect_data():
-	return random.uniform(1.0, 10.0)
-
-simulate_transmission(result):
-	print("HEADER ||", result.header)
-	for i in range(len(result)):
-		print(result.message[i])
+def transmission(result):
+	print("\nHEADER ||", result.header)
+	for i in range(MESSAGE_COUNT):
+		print(result.message[i], end="")
 	return True
