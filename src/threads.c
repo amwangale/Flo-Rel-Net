@@ -7,7 +7,7 @@ t_thread_watcher *new_thread_watcher(t_node *node) {
 
 	if (!(twr = (t_thread_watcher*)calloc(1, sizeof(t_thread_watcher))))
 		return (NULL);
-	if (!(memcpy(twr->results, new_queue(), sizeof(t_queue))))
+	if (!new_queue(&twr->results))
 		return (NULL);
 
 	twr->status.running = true;

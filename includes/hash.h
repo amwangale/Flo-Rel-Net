@@ -20,8 +20,8 @@ typedef struct s_hash {
 	t_lock *lock;
 } t_hash;
 
-void 	*get(t_hash table, unsigned int key);
-bool 	set(t_hash *table, unsigned int key, void *data, size_t size);
-void 	new_hash(t_hash *hash, unsigned int count);
+void 	*get(t_hash *hash, unsigned int key);
+bool 	set(t_hash **hash, unsigned int key, void **data, size_t size);
+bool 	new_hash(t_hash **hash, unsigned int count);
 
 #endif

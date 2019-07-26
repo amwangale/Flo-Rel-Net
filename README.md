@@ -39,6 +39,7 @@ Currently there are two programs:
 Navigate to your home directory or whichever location you would like to install the program
 
 `git clone https://github.com/scollet1/Flo-Rel-Net.git`
+
 `cd Flo-Rel-Net`
 
 ### Python
@@ -46,22 +47,25 @@ Navigate to your home directory or whichever location you would like to install 
 `cd FloRelPy`
 
 This will run a test program by default.
+
 `./run`
 
 You can edit the file to change the arguments or simply run it from the command line like so:
 
-`python3 main.py <ID>`
+`python3 main.py` <ID>
 
 ### C
 
 `./config`
+
 `./install`
 
 This will run a test program by default.
+
 `./run`
 
 You can edit the file to change the arguments or simply run it from the command line like so:
 
-`./FloRel <ID>`
+`./FloRel` <ID>
 
 ## Architecture

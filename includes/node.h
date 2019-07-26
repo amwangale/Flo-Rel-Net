@@ -15,12 +15,12 @@ typedef struct s_node {
 	unsigned int neighbor_count;
 	unsigned int device_count;
 
-	t_hash device_hash;
-	t_hash results_hash;
-	t_hash receive_hash;
-	t_hash neighbor_map;
+	t_hash *device_hash;
+	t_hash *results_hash;
+	t_hash *receive_hash;
+	t_hash *neighbor_map;
 
-	t_queue global_results;
+	t_queue *global_results;
 
 	LoRa_ctl modem;
 	t_status status;

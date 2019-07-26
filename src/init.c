@@ -12,7 +12,7 @@ bool initialize_receive_buffers(t_node *node) {
 		if ((watcher = new_thread_watcher(node))) {
 			if (!set(
 				&node->receive_hash, i,
-				watcher->results, sizeof(t_queue)
+				(void**)watcher->results, sizeof(t_queue)
 			)) {
 				printf("Failed to create results queue\n");
 			} else {
@@ -21,6 +21,8 @@ bool initialize_receive_buffers(t_node *node) {
 					listen_for_data, watcher
 				)) {
 					printf("Pthread failed to create\n");
+				} else {
+					sleep(1);
 				}
 			}
 		}
@@ -36,7 +38,7 @@ bool initialize_devices(t_node *node) {
 		if ((watcher = new_thread_watcher(node))) {
 			if (!set(
 				&node->device_hash, i,
-				watcher->results, sizeof(t_queue)
+				(void**)watcher->results, sizeof(t_queue)
 			)) {
 				printf("Failed to create device queue %i\n", i);
 			} else {
@@ -45,6 +47,8 @@ bool initialize_devices(t_node *node) {
 					collect_device_data, watcher
 				)) {
 					return (false);
+				} else {
+					sleep(1);
 				}
 			}
 		}

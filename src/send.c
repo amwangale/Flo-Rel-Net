@@ -56,7 +56,7 @@ void *sending(void *arg) {
 
 	memcpy(&watcher, (t_thread_watcher*)arg, sizeof(t_thread_watcher));
 	while (watcher.status.running) {
-		if ((result = fetch_top_result(&watcher.node->global_results)))
+		if ((result = fetch_top_result(watcher.node->global_results)))
 			transmit_result(watcher.node, result);
 
 		parent_status = get_status(watcher.node);

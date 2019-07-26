@@ -17,10 +17,9 @@ typedef struct s_queue {
 	t_lock lock;
 } t_queue;
 
-bool 	push_back(t_queue *queue, void *data, size_t size);
+bool 	push_back(t_queue **queue, void **data, size_t size);
 t_item 	*pop_front(t_queue *queue);
-
-t_item 	*new_item(void *data, size_t size);
-t_queue *new_queue(void);
+bool 	new_item(t_item **item, void **data, size_t size);
+bool 	new_queue(t_queue **queue);
 
 #endif

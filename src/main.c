@@ -19,15 +19,6 @@ bool register_node(t_node *node) {
 		return (false);
 	} else {
 		printf("Node exists\n");
-		node->neighbor_count = 5;
-		node->device_count = 3;
-		
-		new_hash(&node->device_hash, node->device_count);
-		new_hash(&node->results_hash, node->neighbor_count);
-		new_hash(&node->receive_hash, node->neighbor_count);
-		new_hash(&node->neighbor_map, node->neighbor_count);
-
-		node->global_results = *new_queue();
 		return (true);
 	}
 }
@@ -55,7 +46,7 @@ void *listen_for_data(void *arg) {
 			if ((data = pop_front(watcher.results))) {
 				push_back(
 					&watcher.node->global_results,
-					data->data, sizeof(t_result)
+					&data->data, sizeof(t_result)
 				);
 				sleep(1);
 			}
@@ -67,7 +58,7 @@ void *listen_for_data(void *arg) {
 		}
 	}
 
-	pthread_exit(&watcher.status);
+	pthread_exit(0);
 	return (NULL);
 }
 
@@ -99,7 +90,10 @@ void *collect_device_data(void *arg) {
 				#ifdef TESTING
 					if ((data = simulate_collect_data())) {
 						if ((f = float_to_float21((float)data))) {
-							memcpy(&result->message.buffer[size], f, sizeof(float21));
+							memcpy(
+								&result->message.buffer[size],
+								f, sizeof(float21)
+							);
 							size++;
 						}
 					}
@@ -108,7 +102,7 @@ void *collect_device_data(void *arg) {
 
 			push_back(
 				&watcher.node->global_results,
-				result, sizeof(t_result)
+				(void**)&result, sizeof(t_result)
 			);
 
 			parent_status = get_status(watcher.node);
@@ -138,7 +132,7 @@ t_node *go_online(t_node *node) {
 	return (node);
 }
 
-t_node *configure(t_node *node) {
+t_node *configure(t_node *node, char *id) {
 	/*
 	in reality, we should also be
 	configuring devices here,
@@ -146,6 +140,16 @@ t_node *configure(t_node *node) {
 	and making sure they are
 	connected!
 	*/
+	node->id = atoi(id);
+
+	node->neighbor_count = 5;
+	node->device_count = 3;
+
+	new_hash(&node->device_hash, node->device_count);
+	new_hash(&node->results_hash, node->neighbor_count);
+	new_hash(&node->receive_hash, node->neighbor_count);
+	new_hash(&node->neighbor_map, node->neighbor_count);
+	
 	node->status.running = true;
 
 	if (register_node(node)) {
@@ -160,10 +164,9 @@ t_node *configure(t_node *node) {
 int main(int argc, char **argv) {
 	srand((unsigned int)time(NULL));
 	t_node node;
-	(void)argv;
 
 	if (argc == 2) {
-		if (configure(&node)) {
+		if (configure(&node, argv[1])) {
 			if (get_status(go_online(&node))->success) {
 				return (0);
 			} else {

@@ -77,7 +77,7 @@ void rx_callback(rxData *data) {
 				result = new_result(header->id);
 				memcpy(&result->header, header, sizeof(t_header));
 				memcpy(&result->message, message, sizeof(t_message));
-				push_back(queue, result, sizeof(t_result));
+				push_back(&queue, (void**)&result, sizeof(t_result));
 			}
 		}
 	}

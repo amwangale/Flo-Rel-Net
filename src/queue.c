@@ -1,59 +1,47 @@
 #include "../includes/florel.h"
 #include "../includes/queue.h"
 
-t_item *new_item(void *data, size_t size) {
-	if (!data || !size) return (false);
-
-	t_item *item;
-	if (!(item = (t_item*)calloc(1, sizeof(t_item))))
-		return (NULL);
+bool new_item(t_item **item, void **data, size_t size) {
+	if (!data || !size || *item)
+		return (false);
+	if (!(*item = (t_item*)calloc(1, sizeof(t_item))))
+		return (false);
 	
-	item->next = NULL;
-	item->prev = NULL;
+	(*item)->next = NULL;
+	(*item)->prev = NULL;
 
-	memcpy(item->data, data, size);
-	return (item);
+	(*item)->data = *data;
+	return (true);
 }
 
-t_queue *new_queue(void) {
-	t_queue *queue;
-
-	if (!(queue = (t_queue*)calloc(1, sizeof(t_queue))))
-		return (NULL);
-	return (queue);
+bool new_queue(t_queue **queue) {
+	if (!(*queue = (t_queue*)calloc(1, sizeof(t_queue))))
+		return (false);
+	return (true);
 }
 
-bool push_back(t_queue *queue, void *data, size_t size) {
-	/*
-	cannot call this function with non-void *
-	data;
+bool push_back(t_queue **queue, void **data, size_t size) {
+	t_item *item;
 
-	don't ask, I don't know why;
-	*/
-	if (queue && data && size) {
-		t_item *item;
+	if (*queue && data && size) {
+		if (new_item(&item, data, size)) {
+			if (!pthread_mutex_trylock(&(*queue)->lock.lock)) {
 
-		if ((item = new_item(data, size))) {
-			if (!pthread_mutex_trylock(&queue->lock.lock)) {
-				// TODO checks
-				if (!queue->front) {
-					printf("NO Q F\n");
-					queue->front = item;
-					item->prev = queue->back;
-				} else if (!queue->back) {
-					printf("NO Q B\n");
-					queue->back = item;
-					item->next = queue->front;
-					queue->front->prev = item;
+				if (!(*queue)->front) {
+					(*queue)->front = item;
+					item->prev = (*queue)->back;
+				} else if (!(*queue)->back) {
+					(*queue)->back = item;
+					item->next = (*queue)->front;
+					(*queue)->front->prev = item;
 				} else {
-					printf("BOTH Q\n");
-					queue->back->prev = item;
-					item->next = queue->back;
-					queue->back = item;
+					(*queue)->back->prev = item;
+					item->next = (*queue)->back;
+					(*queue)->back = item;
 				}
-
-				pthread_mutex_unlock(&queue->lock.lock);
-				printf("Pushed back data\n");
+				
+				pthread_mutex_unlock(&(*queue)->lock.lock);
+				
 				return (true);
 			}
 		}
@@ -63,9 +51,8 @@ bool push_back(t_queue *queue, void *data, size_t size) {
 }
 
 t_item *pop_front(t_queue *queue) {
-	t_item *item;
+	t_item *item = NULL;
 
-	item = NULL;
 	if (queue) {
 		if (!pthread_mutex_trylock(&queue->lock.lock)) {
 			if (!(queue->front || queue->back)) return (NULL);
@@ -78,7 +65,6 @@ t_item *pop_front(t_queue *queue) {
 			item->prev = NULL;
 
 			pthread_mutex_unlock(&queue->lock.lock);
-			return (item);
 		}
 	}
 
