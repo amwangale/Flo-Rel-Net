@@ -53,7 +53,10 @@ bool set(t_hash *table, unsigned int key, void *data, size_t size) {
 	if (key > table->size) return (false);
 	
 	if (!pthread_mutex_trylock(&table->lock->lock)) {
-		memcpy(table->table[key], data, size);
+		if (!memcpy(&table->table[key], data, size)) {
+			pthread_mutex_unlock(&table->lock->lock);
+			return (false);
+		}
 		pthread_mutex_unlock(&table->lock->lock);
 		return (true);
 	}

@@ -6,7 +6,14 @@
 #include "../includes/receive.h"
 
 bool register_node(t_node *node) {
-	// YODO broadcast to other nodes
+	/*
+	here we would want to broadcast a
+	signal to all of our neighbors
+	letting them know we are about to
+	come online, meaning a minimal
+	initialization step would probably
+	have to come before this function;
+	*/
 	if (!node) {
 		printf("Node does not exist\n");
 		return (false);
@@ -15,7 +22,6 @@ bool register_node(t_node *node) {
 		node->neighbor_count = 5;
 		node->device_count = 3;
 		
-		printf("segf %i\n", node->device_hash.size);
 		new_hash(&node->device_hash, node->device_count);
 		new_hash(&node->results_hash, node->neighbor_count);
 		new_hash(&node->receive_hash, node->neighbor_count);
@@ -27,42 +33,39 @@ bool register_node(t_node *node) {
 }
 
 void *listen_for_data(void *arg) {
-	int retry;
-	bool result;
+	/*
+	And endless loop, registered to
+	the thread watcher's results queue;
 
+	we want to keep checking if the
+	receive callback is depositing
+	data so we can do interesting things
+	like immediately hand the data to the
+	send node or segfault when the data
+	is the wrong size;
+	*/
 	t_item *data;
 	t_status *parent_status;
-	t_thread_watcher *watcher;
+	t_thread_watcher watcher;
 
-	watcher = arg;
-	while (watcher->status.running) {
-		retry = 5;
-		data = pop_front(watcher->results);
-		if (data) {
-			while (retry > 0) {
-				result = push_back(
-					&watcher->node->global_results,
-					data->data, sizeof(t_result)
-				);
-				
-				if (result == 0) {
-					retry--;
-				} else {
-					retry = 0;
-				}
+	memcpy(&watcher, (t_thread_watcher*)arg, sizeof(t_thread_watcher));
 
-				sleep(1);
-			}
-			data = NULL;
+	while (watcher.status.running) {
+		if ((data = pop_front(watcher.results))) {
+			push_back(
+				&watcher.node->global_results,
+				data->data, sizeof(t_result)
+			);
+			sleep(1);
 		}
 
-		parent_status = get_status(watcher->node);
+		parent_status = get_status(watcher.node);
 		if (parent_status)
 			if (parent_status->running == false)
-				watcher->status.running = false;
+				watcher.status.running = false;
 	}
 
-	pthread_exit(&watcher->status);
+	pthread_exit(&watcher.status);
 	return (NULL);
 }
 
@@ -73,111 +76,44 @@ bool device_connecting(t_node *node) {
 
 void *collect_device_data(void *arg) {
 	int size;
-	int retry;
 	float data;
-	t_thread_watcher *watcher;
 
 	float21 *f;
 	t_result *result;
 	t_status *parent_status;
+	t_thread_watcher watcher;
 
-	watcher = arg;
-	while (watcher->status.running) {
+	memcpy(&watcher, (t_thread_watcher*)arg, sizeof(t_thread_watcher));
+	while (watcher.status.running) {
 		size = 0;
-		retry = 5;
-		while (size < MESSAGE_COUNT && retry) {
-			// receive bound to device
-			if ((data = simulate_collect_data())) {
-				f = float_to_float21((float)data);
-				result->message.buffer[size] = *f;
-				size++;
-			} else {
-				retry--;
-			}
-		}
 
-		if (size >= MESSAGE_SIZE) {
-			retry = 5;
-			while (!push_back(
-				&watcher->node->global_results,
-				result, sizeof(t_result)
-			) && retry--) {
-				sleep(1);
-			}
-			result = NULL;
-		}
+		#ifdef TESTING
+			result = new_result(rand() % watcher.node->device_count);
+		#endif
 
-		parent_status = get_status(watcher->node);
-				if (parent_status)
-					if (parent_status->running == false)
-						watcher->status.running = false;
-	}
-
-	pthread_exit(&watcher->status);
-	return (NULL);
-}
-
-void *send_and_receive(void *arg) {
-	unsigned int index;
-
-	t_result *result;
-	t_status *parent_status;
-	t_thread_watcher *watcher;
-
-	t_header *header;
-	t_queue *queue;
-	t_message *message;
-
-	watcher = arg;
-	while (watcher->status.running) {
-		if ((result = simulate_receive(watcher->node))) {
-			if ((header = strip_header(result))) {
-				
-				printf("neighbors exist? %s, %d\n",
-					&watcher->node->neighbor_map? "true":"false",
-					header->id
-				);
-
-				// for (int i = 0; i < MESSAGE_COUNT; i++) {printf(" %f", float21_to_float(result->message.buffer[i]));}
-
-				index = *((int*)get(watcher->node->neighbor_map, header->id));
-				printf("INDEX %i\n", index);
-
-				if ((queue = (t_queue*)get(watcher->node->receive_hash, index))) {
-					if ((message = strip_message(result))) {
-						if (push_back(queue, result, sizeof(t_result)) == false) {
-							printf("Failed to push back\n");
-						}
-					} else {
-						printf("Failed to interpret message\n");
+		while (size < MESSAGE_COUNT) {
+			#ifdef TESTING
+				if ((data = simulate_collect_data())) {
+					if ((f = float_to_float21((float)data))) {
+						memcpy(&result->message.buffer[size], f, sizeof(float21));
+						size++;
 					}
-				} else {
-					printf("Failed to get queue\n");
 				}
-			} else {
-				printf("Failed to iterpret header\n");
-			}
-		} else {
-			printf("No data received\n");
+			#endif
 		}
 
-		sleep(1);
+		push_back(
+			&watcher.node->global_results,
+			result, sizeof(t_result)
+		);
 
-		if ((result = fetch_top_result(&watcher->node->global_results))) {
-			if (transmit_result(watcher->node, result) == false) {
-				printf("Failed to send result\n");
-			} else {
-				printf("Result sent\n");
-			}
-		}
-
-		parent_status = get_status(watcher->node);
+		parent_status = get_status(watcher.node);
 		if (parent_status)
 			if (parent_status->running == false)
-				watcher->status.running = false;
+				watcher.status.running = false;
 	}
 
-	pthread_exit(&watcher->status);
+	pthread_exit(&watcher.status);
 	return (NULL);
 }
 
@@ -198,6 +134,13 @@ t_node *go_online(t_node *node) {
 }
 
 t_node *configure(t_node *node) {
+	/*
+	in reality, we should also be
+	configuring devices here,
+	registering them to our hash,
+	and making sure they are
+	connected!
+	*/
 	node->status.running = true;
 
 	if (register_node(node)) {
@@ -211,23 +154,19 @@ t_node *configure(t_node *node) {
 
 int main(int argc, char **argv) {
 	srand((unsigned int)time(NULL));
-	t_node *node;
+	t_node node;
+	(void)argv;
 
 	if (argc == 2) {
-		if ((node = new_node(argv))) {
-			if (configure(node)) {
-				if (get_status(go_online(node))->success) {
-					return (0);
-				} else {
-					printf("Failed to go online\n");
-					return (-1);
-				}
+		if (configure(&node)) {
+			if (get_status(go_online(&node))->success) {
+				return (0);
 			} else {
-				printf("Failed to configure node\n");
+				printf("Failed to go online\n");
 				return (-1);
 			}
 		} else {
-			printf("Failed to crete node\n");
+			printf("Failed to configure node\n");
 			return (-1);
 		}
 	} else {

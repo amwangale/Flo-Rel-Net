@@ -11,11 +11,7 @@ t_item *new_item(void *data, size_t size) {
 	item->next = NULL;
 	item->prev = NULL;
 
-	printf("%p %ld\n", data, size);
-	sleep(1);
-	printf("\n");
-	memcpy(&item->data, &data, size);
-	printf("\n");
+	memcpy(item->data, data, size);
 	return (item);
 }
 

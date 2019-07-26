@@ -2,12 +2,12 @@
 #include "../includes/result.h"
 #include "../includes/node.h"
 
+#ifdef TESTING
 t_result *simulate_random_result(t_node *node) {
 	float point;
 	float21 *data;
 	t_result *result;
 
-	printf("THE FUK %d\n", node->id);
 	if (!(result = new_result(rand() % node->neighbor_count)))
 		return (NULL);
 	
@@ -40,10 +40,7 @@ t_result *simulate_receive(t_node *node) {
 
 float simulate_collect_data(void) {
 	float data;
-
 	data = ((float)rand() / (float)(RAND_MAX)) * 5.0;
-	printf("Collected simulated data %f\n", data);
-
 	return (data);
 }
 
@@ -58,8 +55,9 @@ bool simulate_transmission(t_result *result) {
 		header >>= 1;
 	}
 	printf(" [\n");
-	// for (int i = 0; i < MESSAGE_COUNT; i++) {printf(" %f", float21_to_float(result->message.buffer[i]));}
+	for (int i = 0; i < MESSAGE_COUNT; i++) {printf(" %f", float21_to_float(result->message.buffer[i]));}
 	printf("\n]\n");
 
 	return (true);
 }
+#endif

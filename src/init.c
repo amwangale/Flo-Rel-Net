@@ -5,30 +5,24 @@
 #include "../includes/threads.h"
 #include "../sx1278-LoRa-RaspberryPi/incl/LoRa.h"
 
-bool initialize_recieve_buffers(t_node *node) {
-	int error;
+bool initialize_receive_buffers(t_node *node) {
 	t_thread_watcher *watcher;
-	
-	if ((watcher = new_thread_watcher(node))) {
-		// new_hash(&node->receive_hash, node->neighbor_count);
-		for (unsigned int i = 0; i < node->neighbor_count; i++) {
-			// checking if index exists
-			// if (!get(node->receive_hash, i)) {
-				if (!set(
-					&node->receive_hash, i,
-					watcher->results, sizeof(watcher->results)
+
+	for (unsigned int i = 0; i < node->neighbor_count; i++) {
+		if ((watcher = new_thread_watcher(node))) {
+			if (!set(
+				&node->receive_hash, i,
+				watcher->results, sizeof(t_queue)
+			)) {
+				printf("Failed to create results queue\n");
+			} else {
+				if (pthread_create(
+					&watcher->thread, NULL,
+					listen_for_data, watcher
 				)) {
-					printf("Failed to create results queue\n");
-				} else {
-					error = pthread_create(
-						&watcher->thread, NULL,
-						listen_for_data, watcher
-					);
-					if (error)  {
-						printf("Pthread failed to create\n");
-					}
+					printf("Pthread failed to create\n");
 				}
-			// }
+			}
 		}
 	}
 
@@ -36,62 +30,24 @@ bool initialize_recieve_buffers(t_node *node) {
 }
 
 bool initialize_devices(t_node *node) {
-	int error;
 	t_thread_watcher *watcher;
 
-	if ((watcher = new_thread_watcher(node))) {
-		new_hash(&node->device_hash, node->device_count);
-
-		for (unsigned int i = 0; i < node->device_count; i++) {
-			if (!get(node->device_hash, i)) {
-				if (!set(&node->device_hash, i, watcher->results, sizeof(watcher->results))) {
-					printf("Failed to create device queue %i\n", i);
-				} else {
-					error = pthread_create(
-						&watcher->thread, NULL,
-						collect_device_data, watcher
-					);
-					if (error)  {
-						printf("Pthread failed to create\n");
-					} else {
-						pthread_join(watcher->thread, (void*)&error);
-					}	
+	for (unsigned int i = 0; i < node->device_count; i++) {
+		if ((watcher = new_thread_watcher(node))) {
+			if (!set(
+				&node->device_hash, i,
+				watcher->results, sizeof(t_queue)
+			)) {
+				printf("Failed to create device queue %i\n", i);
+			} else {
+				if (pthread_create(
+					&watcher->thread, NULL,
+					collect_device_data, watcher
+				)) {
+					return (false);
 				}
 			}
 		}
-	}
-
-	return (true);
-}
-
-bool initialize_receiver(t_node *node) {
-	int error;
-	t_thread_watcher *watcher;
-
-	if ((watcher = new_thread_watcher(node))) {
-		new_hash(&node->neighbor_map, node->neighbor_count);
-
-		for (unsigned int i = 0; i < node->neighbor_count; i++) {
-			if (!get(node->neighbor_map, i)) {
-				if (!set(&node->neighbor_map, i, &i, sizeof(i))) {
-					printf("Failed to create device queue %i\n", i);
-				}
-			}
-		}
-
-		error = pthread_create(
-			&watcher->thread, NULL,
-			&receiving, watcher
-		);
-
-		if (error)  {
-			printf("Pthread failed to create\n");
-		} else {
-			// pthread_join(watcher->thread, (void*)&error);
-		}
-	} else {
-		printf("Failed to create receiver thread\n");
-		return (false);
 	}
 
 	return (true);
@@ -104,46 +60,12 @@ bool initialize_sender(t_node *node) {
 	if ((watcher = new_thread_watcher(node))) {
 		error = pthread_create(
 			&watcher->thread, NULL,
-			&sending, watcher
+			sending, watcher
 		);
+
 		if (error)  {
 			printf("Pthread failed to create\n");
 			return (false);
-		} else {
-			// pthread_join(watcher->thread, (void*)&error);
-		}
-	} else {
-		printf("Failed to create sender thread\n");
-		return (false);
-	}
-
-	return (true);
-}
-
-bool initialize_send_receive(t_node *node) {
-	int error;
-	t_thread_watcher *watcher;
-
-	if ((watcher = new_thread_watcher(node))) {
-		new_hash(&node->neighbor_map, node->neighbor_count);
-
-		for (unsigned int i = 0; i < node->neighbor_count; i++) {
-			// if (!get(node->neighbor_map, i)) {
-				if (!set(&node->neighbor_map, i, &i, sizeof(i))) {
-					printf("Failed to create device queue %i\n", i);
-				}
-			// }
-		}
-
-		error = pthread_create(
-			&watcher->thread, NULL,
-			send_and_receive, watcher
-		);
-		if (error)  {
-			printf("Pthread failed to create\n");
-			return (false);
-		} else {
-			// pthread_join(watcher->thread, (void*)&error);
 		}
 	} else {
 		printf("Failed to create sender thread\n");
@@ -156,35 +78,31 @@ bool initialize_send_receive(t_node *node) {
 bool initialize_lora(t_node *node) {
 	if (!node) return (false);
 
-	/*
-	LoRa_ctl modem;
 	float21 buffer[PACKET_SIZE / BIT_WIDTH];
 
     // See for typedefs, enumerations and there values in LoRa.h header file
-    modem.spiCS = 0; // Raspberry SPI CE pin number
+	node->modem.spiCS = 0; // Raspberry SPI CE pin number
     
-    modem.rx.callback = rx_callback;
-    modem.rx.data.buf = buffer;
+    node->modem.rx.callback = rx_callback;
+    node->modem.rx.data.buf = (char*)buffer;
 
-	modem.tx.callback = tx_callback;
-    modem.tx.data.buf = buffer;
+	node->modem.tx.callback = tx_callback;
+    node->modem.tx.data.buf = (char*)buffer;
 
-    modem.eth.preambleLen = 6;
-    modem.eth.bw = BW62_5; //Bandwidth 62.5KHz
-    modem.eth.sf = SF12; //Spreading Factor 12
-    modem.eth.ecr = CR8; //Error coding rate CR4/8
-    modem.eth.freq = PACKET_SIZE * 1000000; // 900.0MHz
-    modem.eth.resetGpioN = 4;// GPIO4 on lora RESET pi
-    modem.eth.dio0GpioN = 17;// GPIO17 on lora DIO0 pin to control Rxdone and Txdone interrupts
-    modem.eth.outPower = OP20;// Output power
-    modem.eth.powerOutPin = PA_BOOST;// Power Amplifire pin
-    modem.eth.AGC = 1;// Auto Gain Control
-    modem.eth.OCP = 240;// 45 to 240 mA. 0 to turn off protection
-    modem.eth.implicitHeader = 0;// Explicit header mode
-    modem.eth.syncWord = 0x12;
-
-    node->modem = modem;
-    */
+    node->modem.eth.preambleLen = 6;
+    node->modem.eth.bw = BW62_5; // Bandwidth 62.5KHz
+    node->modem.eth.sf = SF12; // Spreading Factor 12
+    node->modem.eth.ecr = CR8; // Error coding rate CR4/8
+    node->modem.eth.freq = 900000000; // 900.0MHz
+    node->modem.eth.resetGpioN = 4; // GPIO4 on lora RESET pi
+    node->modem.eth.dio0GpioN = 17; // GPIO17 on lora DIO0 pin to control Rxdone and Txdone interrupts
+    node->modem.eth.outPower = OP20; // Output power
+    node->modem.eth.powerOutPin = PA_BOOST; // Power Amplifire pin
+    node->modem.eth.AGC = 1; // Auto Gain Control
+    node->modem.eth.OCP = 240; // 45 to 240 mA. 0 to turn off protection
+    node->modem.eth.implicitHeader = 0; // Explicit header mode
+    node->modem.eth.syncWord = 0x12;
+    node->modem.eth.CRC = 1;//Turn on CRC checking
 
     return (true);
     
@@ -194,47 +112,33 @@ bool initialize_lora(t_node *node) {
 bool initialize(t_node *node) {
 	if (initialize_lora(node)) {
 		printf("LoRa initialized\n");
-		
-		/*
-		LoRa_begin(&node->modem);
-		*/
 
 		if (initialize_devices(node)) {
 			printf("Devices initialized\n");
-			/*			
-			if (initialize_sender(node)) {
-				printf("Sender initialized\n");
-			} else {
-				node->status.failure = true;
-				return (false);
-			}
-			*/
 		} else {
 			node->status.failure = true;
 			return (false);
 		}
 
-		if (initialize_recieve_buffers(node)) {
+		if (initialize_receive_buffers(node)) {
 			printf("Receive buffers initialized\n");
-			/*
-			if (initialize_receiver(node)) {
-				printf("Receiver initialized\n");
-			} else {
-				node->status.failure = true;
-				return (false);
-			}
-			*/
 		} else {
 			node->status.failure = true;
 			return (false);
 		}
 
-		if (initialize_send_receive(node)) {
+		if (initialize_sender(node)) {
 			printf("Send/Receive initialized\n");
 		} else {
 			node->status.failure = true;
 			return (false);
 		}
+
+		#ifndef TESTING
+			LoRa_begin(&node->modem);
+		#endif
+		printf("LoRa started\n");
+		
 		node->status.success = true;
 		return (true);
 	} else {

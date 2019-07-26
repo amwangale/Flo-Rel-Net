@@ -6,26 +6,20 @@ bool transmit_result(t_node *node, t_result *result) {
 	(void)node;
 
 	if (result) {
-		/*
-		// manually stoping RxCont mode
-		LoRa_stop_receive(node->modem);
-		*/
+		#ifndef TESTING	
+			// manually stoping RxCont mode
+			LoRa_stop_receive(&node->modem);
 		
-		result->header.flags.transmission = 1;
+			result->header.flags.transmission = 1;
 
-		/*
-		// copy data we'll sent to buffer
-		memcpy(node->modem.tx.data.buf, result, sizeof(t_result));
-		LoRa_send(&node->modem);
-		*/
-		
-		simulate_transmission(result);
-		sleep(1);
-		
-		/*
-		LoRa_receive(&node->modem);
-		*/
-		
+			// copy data we'll sent to buffer
+			memcpy(node->modem.tx.data.buf, result, sizeof(t_result));
+
+			LoRa_send(&node->modem);
+			sleep(1);
+			LoRa_receive(&node->modem);
+		#endif
+
 		return (true);
 	}
 
@@ -38,11 +32,11 @@ t_result *fetch_top_result(t_queue *global_results) {
 
 	result = new_result(0);
 	if ((item = pop_front(global_results))) {
-		memcpy(&result->header, &item->data, sizeof(t_header));
+		memcpy(&result->header, item->data, sizeof(t_header));
 		for (int i = 0; i < PACKET_COUNT; i++) {
 			memcpy(
 				&result->message.buffer[i],
-				&item->data, sizeof(float21)
+				item->data, sizeof(float21)
 			);
 		}
 	}
@@ -50,34 +44,27 @@ t_result *fetch_top_result(t_queue *global_results) {
 	return (result);
 }
 
+void tx_callback(txData *data) {
+	(void)data;
+	//
+}
+
 void *sending(void *arg) {
 	t_result *result;
 	t_status *parent_status;
-	t_thread_watcher *watcher;
+	t_thread_watcher watcher;
 
-	watcher = arg;
+	memcpy(&watcher, (t_thread_watcher*)arg, sizeof(t_thread_watcher));
+	while (watcher.status.running) {
+		if ((result = fetch_top_result(&watcher.node->global_results)))
+			transmit_result(watcher.node, result);
 
-	// printf("running sender %d\n", watcher->status.running);
-	// printf("success %d\n", watcher->status.success);
-	// printf("failure %d\n", watcher->status.failure);
-
-	while (watcher->status.running) {
-		if ((result = fetch_top_result(&watcher->node->global_results))) {
-			if (transmit_result(watcher->node, result) == false) {
-				printf("Failed to send result\n");
-			} else {
-				printf("Result sent\n");
-			}
-		}
-
-		parent_status = get_status(watcher->node);
+		parent_status = get_status(watcher.node);
 		if (parent_status)
 			if (parent_status->running == false)
-				watcher->status.running = false;
+				watcher.status.running = false;
 	}
 
-	free_result(result);
-
-	pthread_exit(&watcher->status);
+	pthread_exit(&watcher.status);
 	return (NULL);
 }

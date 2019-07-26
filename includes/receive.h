@@ -5,7 +5,8 @@
 #include "node.h"
 
 void 		*receiving(void *arg);
-t_message *strip_message(t_result *result);
-t_header *strip_header(t_result *result);
+void 		rx_callback(rxData *data);
+t_header 	*strip_header(char **data);
+t_message 	*strip_message(char **data);
 
 #endif

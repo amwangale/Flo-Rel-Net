@@ -41,8 +41,9 @@ $(NAME):
 		$(CC) $(CFLAGS) $(INCL) $(SRC) $(LIBS) -o $(NAME)
 
 $(TESTING):
-		$(MAKE) -C $(GPIOLIB)
-		$(CC) $(CFLAGS) $(INCL) $(SRC) -D TESTING -o $(NAME)
+		$(MAKE) -C $(DIRGPIO)
+		$(MAKE) -C $(DIRLORA) re
+		$(CC) $(CFLAGS) $(INCL) $(SRC) $(LIBS) -D TESTING -o $(NAME)
 
 all: $(NAME)
 
