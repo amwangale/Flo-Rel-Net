@@ -22,7 +22,7 @@ t_node *new_node(char **argv) {
 	if (!(node = (t_node*)calloc(1, sizeof(t_node))))
 		return (NULL);
 	id = atoi(argv[1]);
-	node->id |= id;
+	node->id = id;
 
 	node->status = *new_status(true);
 

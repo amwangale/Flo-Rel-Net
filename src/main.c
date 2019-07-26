@@ -48,21 +48,23 @@ void *listen_for_data(void *arg) {
 	t_status *parent_status;
 	t_thread_watcher watcher;
 
-	memcpy(&watcher, (t_thread_watcher*)arg, sizeof(t_thread_watcher));
+	if (arg) {
+		memcpy(&watcher, (t_thread_watcher*)arg, sizeof(t_thread_watcher));
 
-	while (watcher.status.running) {
-		if ((data = pop_front(watcher.results))) {
-			push_back(
-				&watcher.node->global_results,
-				data->data, sizeof(t_result)
-			);
-			sleep(1);
+		while (watcher.status.running) {
+			if ((data = pop_front(watcher.results))) {
+				push_back(
+					&watcher.node->global_results,
+					data->data, sizeof(t_result)
+				);
+				sleep(1);
+			}
+
+			parent_status = get_status(watcher.node);
+			if (parent_status)
+				if (parent_status->running == false)
+					watcher.status.running = false;
 		}
-
-		parent_status = get_status(watcher.node);
-		if (parent_status)
-			if (parent_status->running == false)
-				watcher.status.running = false;
 	}
 
 	pthread_exit(&watcher.status);
@@ -83,37 +85,40 @@ void *collect_device_data(void *arg) {
 	t_status *parent_status;
 	t_thread_watcher watcher;
 
-	memcpy(&watcher, (t_thread_watcher*)arg, sizeof(t_thread_watcher));
-	while (watcher.status.running) {
-		size = 0;
+	if (arg) {
+		memcpy(&watcher, (t_thread_watcher*)arg, sizeof(t_thread_watcher));
 
-		#ifdef TESTING
-			result = new_result(rand() % watcher.node->device_count);
-		#endif
+		while (watcher.status.running) {
+			size = 0;
 
-		while (size < MESSAGE_COUNT) {
 			#ifdef TESTING
-				if ((data = simulate_collect_data())) {
-					if ((f = float_to_float21((float)data))) {
-						memcpy(&result->message.buffer[size], f, sizeof(float21));
-						size++;
-					}
-				}
+				result = new_result(rand() % watcher.node->device_count);
 			#endif
+
+			while (size < MESSAGE_COUNT) {
+				#ifdef TESTING
+					if ((data = simulate_collect_data())) {
+						if ((f = float_to_float21((float)data))) {
+							memcpy(&result->message.buffer[size], f, sizeof(float21));
+							size++;
+						}
+					}
+				#endif
+			}
+
+			push_back(
+				&watcher.node->global_results,
+				result, sizeof(t_result)
+			);
+
+			parent_status = get_status(watcher.node);
+			if (parent_status)
+				if (parent_status->running == false)
+					watcher.status.running = false;
 		}
-
-		push_back(
-			&watcher.node->global_results,
-			result, sizeof(t_result)
-		);
-
-		parent_status = get_status(watcher.node);
-		if (parent_status)
-			if (parent_status->running == false)
-				watcher.status.running = false;
 	}
 
-	pthread_exit(&watcher.status);
+	pthread_exit(0);
 	return (NULL);
 }
 
