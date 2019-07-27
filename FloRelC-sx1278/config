@@ -1,6 +1,3 @@
 #!/bin/sh
-wget http://www.cooking-hacks.com/media/cooking/images/documentation/tutorial_SX1272/arduPi-api_LoRa_v1_4.zip && unzip -u arduPi-api_LoRa_v1_4.zip && cd cooking/examples/LoRa && chmod +x cook.sh && cd ../../..
-
-wget http://www.cooking-hacks.com/media/cooking/images/documentation/raspberry_arduino_shield/raspberrypi.zip && unzip raspberrypi.zip && cd cooking/arduPi && chmod +x install_arduPi && ./install_arduPi && rm install_arduPi && cd ../..
-
-cd cooking/arduPi/bcm2835-1.46 && ./configure && cd ../../..
+git submodule update --init --recursive
+git submodule update --recursive --remote
