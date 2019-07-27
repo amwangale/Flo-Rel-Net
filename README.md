@@ -12,10 +12,11 @@ Each year people are displaced by flood waters. This project aims to analyze a r
 
 # How to run
 
-Currently there are two programs:
+Currently there are three programs:
+
  - A Python simulator that demonstrates the software pipeline from collecting data to transmitting it
 
- - A C program which actually runs on the device, but will not work without the necessary hardware
+ - Two C program which actually run on the device, but will not work without the necessary hardware
 
 ## Requirements
 
@@ -31,8 +32,12 @@ Currently there are two programs:
 
  - Make
  - gcc
- - [pigpio](https://github.com/scollet1/sx1278-LoRa-RaspberryPi)
- - [sx1278-LoRa-RaspberryPi](https://github.com/joan2937/pigpio)
+ - sx1278
+   - [pigpio](https://github.com/scollet1/sx1278-LoRa-RaspberryPi)
+   - [sx1278-LoRa-RaspberryPi](https://github.com/joan2937/pigpio)
+ - [sx1272](https://www.cooking-hacks.com/documentation/tutorials/extreme-range-lora-sx1272-module-shield-arduino-raspberry-pi-intel-galileo/)
+   - sx1272 library
+   - ArduPi library
 
 ## How to run
 
@@ -57,6 +62,8 @@ You can edit the file to change the arguments or simply run it from the command 
 ### C
 
 `./config`
+
+This will make a test program by default.
 
 `./install`
 
