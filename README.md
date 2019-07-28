@@ -57,7 +57,7 @@ This will run a test program by default.
 
 You can edit the file to change the arguments or simply run it from the command line like so:
 
-`python3 main.py` <ID>
+`python3 main.py <ID>`
 
 ### C - sx127*
 
@@ -73,4 +73,4 @@ This will run a test program by default.
 
 You can edit the file to change the arguments or simply run it from the command line like so:
 
-`./FloRel` <ID>
+`./FloRel <ID>`
