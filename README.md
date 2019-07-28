@@ -3,12 +3,12 @@ Flood Relay Network
 
 # What is this?
 
-A radio relay network to collect and transmit weather data.
+FloRelNet is a radio relay network to collect and transmit weather data in flood-effected areas. It is comprised of LoRa radio transceivers mounted on Raspberry Pis with auxillary data collection devices.
 
 
 # Why are we doing this?
 
-Each year people are displaced by flood waters. This project aims to analyze a real-time data feed to help enable flood prevention and preparedness efforts.
+Each year hundreds of thousands of people are displaced by flood waters and natural disasters. This project aims to establish a real-time data feed to help enable flood prevention and preparedness efforts.
 
 # How to run
 
@@ -59,7 +59,7 @@ You can edit the file to change the arguments or simply run it from the command 
 
 `python3 main.py` <ID>
 
-### C
+### C - sx127*
 
 `./config`
 
@@ -74,5 +74,3 @@ This will run a test program by default.
 You can edit the file to change the arguments or simply run it from the command line like so:
 
 `./FloRel` <ID>
-
-## Architecture

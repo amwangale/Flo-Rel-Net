@@ -2,6 +2,18 @@
 #include "../includes/utils.h"
 #include "../includes/node.h"
 
+void free_node(t_node *node) {
+	if (node) {
+		free_hash(node->device_hash);
+		free_hash(node->results_hash);
+		free_hash(node->receive_hash);
+		free_hash(node->neighbor_map);
+		
+		free_queue(node->global_results);
+		free(node);
+	}
+}
+
 t_status *get_status(t_node *node) {
 	t_status *result;
 

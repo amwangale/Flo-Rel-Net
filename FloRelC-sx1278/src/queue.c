@@ -1,6 +1,20 @@
 #include "../includes/florel.h"
 #include "../includes/queue.h"
 
+void free_queue(t_queue *queue) {
+	if (queue) {
+		if (queue->front) {
+			while (queue->front) {
+				if (queue->front->data) {
+					free(queue->front->data);
+				}
+				queue->front = queue->front->next;
+				free(queue->front->prev);
+			}
+		}
+	}
+}
+
 bool new_item(t_item **item, void **data, size_t size) {
 	if (!data || !size || *item)
 		return (false);

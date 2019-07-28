@@ -168,6 +168,7 @@ int main(int argc, char **argv) {
 	if (argc == 2) {
 		if (configure(&node, argv[1])) {
 			if (get_status(go_online(&node))->success) {
+				free_node(&node);
 				return (0);
 			} else {
 				printf("Failed to go online\n");

@@ -27,6 +27,7 @@ typedef struct s_node {
 	t_lock lock;
 } t_node;
 
+void free_node(t_node *ndoe);
 t_status 	*get_status(t_node *node);
 t_node 		*new_node(char **argv);
 
